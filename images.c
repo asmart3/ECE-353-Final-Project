@@ -6,6 +6,7 @@
 
 const uint_8 tankBitmaps =
 {
+	0x00, 0x00, 0x00, 0x00,
 	0x00, 0x07, 0x80, 0x00, // ### # ####  ##   # #  ### ### 
 	0x00, 0x07, 0x80, 0x00, // # # # #  ### #  ##  ###  # # #
 	0x00, 0x03, 0x00, 0x00, // ##  #####  ##    #### # # ### 
@@ -36,8 +37,9 @@ const uint_8 tankBitmaps =
 	0x07, 0xDF, 0xEF, 0x80, // # #                         ##
 	0x1F, 0xC8, 0x4F, 0xE0, //  #        ## #### #        ###
 	0x0F, 0x80, 0x07, 0xC0, // ## #     ## ###### ##       ##
+	0x00, 0x00, 0x00, 0x00,
 };
 
 // Bitmap sizes for tanknew
-const uint_8 tankWidthPixels = 30;
-const uint_8 tankHeightPixels = 30;
+const uint_8 tankWidthPixels = 32;
+const uint_8 tankHeightPixels = 32;
