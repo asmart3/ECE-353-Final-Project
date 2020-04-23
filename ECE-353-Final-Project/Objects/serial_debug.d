@@ -1,0 +1,9 @@
+.\objects\serial_debug.o: ..\peripherals\c\serial_debug.c
+.\objects\serial_debug.o: ..\peripherals\include\serial_debug.h
+.\objects\serial_debug.o: ..\drivers\include\gpio_port.h
+.\objects\serial_debug.o: ..\drivers\include\driver_defines.h
+.\objects\serial_debug.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\serial_debug.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\serial_debug.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\serial_debug.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\errno.h
+.\objects\serial_debug.o: C:\Users\Matthew\AppData\Local\Arm\Packs\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123\TM4C123GH6PM.h

@@ -1,0 +1,9 @@
+.\objects\ps2.o: ..\peripherals\c\ps2.c
+.\objects\ps2.o: ..\peripherals\include\ps2.h
+.\objects\ps2.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\ps2.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+.\objects\ps2.o: ..\drivers\include\gpio_port.h
+.\objects\ps2.o: ..\drivers\include\driver_defines.h
+.\objects\ps2.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\ps2.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\errno.h
+.\objects\ps2.o: C:\Users\Matthew\AppData\Local\Arm\Packs\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123\TM4C123GH6PM.h
