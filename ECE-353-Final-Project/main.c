@@ -2,6 +2,12 @@
 #include "main.h"
 
 //*****************************************************************************
+// Global Vars
+//*****************************************************************************
+barrier barriers[1];
+
+
+//*****************************************************************************
 //*****************************************************************************
 void DisableInterrupts(void)
 {
@@ -20,13 +26,56 @@ void EnableInterrupts(void)
 }
 
 
+
+
+// PlayerMovement
+void playerMove(tank *player,bool *alert_move){
+	if (ps2_get_x() > 0x7FF){
+			if((player->xPos/8 - (tankWidthPixels/2))>0){
+				player->xPos -= 1;
+				*alert_move = true;
+			}
+		}else if(ps2_get_x() < 0x700){
+			if((player->xPos/8 + (tankWidthPixels/2))<COLS){
+				player->xPos += 1;
+				*alert_move = true;
+			}
+		}
+		
+		if (ps2_get_y() > 0x7FF){
+			if((player->yPos/8 - (tankHeightPixels/2))>0){
+				player->yPos -= 1;
+				*alert_move = true;
+			}
+		}else if(ps2_get_y() < 0x700){
+			if((player->yPos/8 + (tankHeightPixels/2))<ROWS){
+				player->yPos += 1;
+				*alert_move = true;
+			}
+		}
+	
+}
+
+
+void initBarriers(){
+	barrier block ={20,20,20,20,false};
+	barriers[0] = block;
+	
+}
+
+void drawBarriers(){
+	lcd_draw_box(barriers[0].xPos,barriers[0].width,barriers[0].yPos,barriers[0].height,LCD_COLOR_RED,LCD_COLOR_BLACK,2);
+	
+		
+}
+
 int main(void)
 {
 	bool alert_move = false;
 	bool game_over = false;
 	tank player;
-	player.xPos = 160;
-	player.yPos = 160;
+	player.xPos = 860;
+	player.yPos = 860;
 	
 		//initialize_serial_debug();
 			
@@ -38,42 +87,26 @@ int main(void)
 
 		init_hardware();
 		lcd_draw_image(player.xPos/8,tankWidthPixels,player.yPos/8,tankHeightPixels,tankBitmaps,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
-	
+		initBarriers();
 	
 	while(!game_over){
+		
+		
+		
 		if(alert_move){
 			lcd_draw_image(player.xPos/8,tankWidthPixels,player.yPos/8,tankHeightPixels,tankBitmaps,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
 		}
 		//check x,y ps2 positions
-		if (ps2_get_x() > 0x7FF){
-			if((player.xPos/8 - (tankWidthPixels/2))>0){
-				player.xPos -= 1;
-				alert_move = true;
-			}
-		}else if(ps2_get_x() < 0x700){
-			if((player.xPos/8 + (tankWidthPixels/2))<COLS){
-				player.xPos += 1;
-				alert_move = true;
-			}
-		}
+		playerMove(&player,&alert_move);
 		
-		if (ps2_get_y() > 0x7FF){
-			if((player.yPos/8 - (tankHeightPixels/2))>0){
-				player.yPos -= 1;
-				alert_move = true;
-			}
-		}else if(ps2_get_y() < 0x700){
-			if((player.yPos/8 + (tankHeightPixels/2))<ROWS){
-				player.yPos += 1;
-				alert_move = true;
-			}
-		}
+		//barriers
+		drawBarriers();
 		
 	}
 	
 }  
 
-// Check if position is on screen edge
+
 
 
 //*****************************************************************************

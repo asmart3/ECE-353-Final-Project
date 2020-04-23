@@ -27,5 +27,12 @@ typedef struct
 	int delay; // time since last shot
 }	tank;
 
-
+typedef struct
+{
+	int xPos;
+	int yPos;
+	int width;
+	int height;
+	bool broken;
+} barrier;
 #endif
