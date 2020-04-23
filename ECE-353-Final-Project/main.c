@@ -42,7 +42,7 @@ int main(void)
 	
 	while(!game_over){
 		if(alert_move){
-			lcd_draw_image(player.xPos/8,tankWidthPixels,player.yPos/8,tankHeightPixels,tankBitmaps,LCD_COLOR_BLACK,LCD_COLOR_GREEN);
+			lcd_draw_image(player.xPos/8,tankWidthPixels,player.yPos/8,tankHeightPixels,tankBitmaps,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
 		}
 		//check x,y ps2 positions
 		if (ps2_get_x() > 0x7FF){

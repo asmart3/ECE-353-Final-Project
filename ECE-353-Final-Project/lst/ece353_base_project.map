@@ -198,7 +198,7 @@ Image Symbol Table
     i.__scatterload_null                     0x00001b6e   Section        2  handlers.o(i.__scatterload_null)
     i.__scatterload_zeroinit                 0x00001b70   Section       14  handlers.o(i.__scatterload_zeroinit)
     i.malloc                                 0x00001b80   Section        0  malloc.o(i.malloc)
-    .constdata                               0x00001bec   Section      122  images.o(.constdata)
+    .constdata                               0x00001bec   Section      130  images.o(.constdata)
     .data                                    0x20000000   Section        2  serial_debug.o(.data)
     Rx_Interrupts_Enabled                    0x20000000   Data           1  serial_debug.o(.data)
     Tx_Interrupts_Enabled                    0x20000001   Data           1  serial_debug.o(.data)
@@ -415,11 +415,11 @@ Image Symbol Table
     __scatterload_null                       0x00001b6f   Thumb Code     2  handlers.o(i.__scatterload_null)
     __scatterload_zeroinit                   0x00001b71   Thumb Code    14  handlers.o(i.__scatterload_zeroinit)
     malloc                                   0x00001b81   Thumb Code    92  malloc.o(i.malloc)
-    tankBitmaps                              0x00001bec   Data         120  images.o(.constdata)
-    tankWidthPixels                          0x00001c64   Data           1  images.o(.constdata)
-    tankHeightPixels                         0x00001c65   Data           1  images.o(.constdata)
-    Region$$Table$$Base                      0x00001c68   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x00001c88   Number         0  anon$$obj.o(Region$$Table)
+    tankBitmaps                              0x00001bec   Data         128  images.o(.constdata)
+    tankWidthPixels                          0x00001c6c   Data           1  images.o(.constdata)
+    tankHeightPixels                         0x00001c6d   Data           1  images.o(.constdata)
+    Region$$Table$$Base                      0x00001c70   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x00001c90   Number         0  anon$$obj.o(Region$$Table)
     SystemCoreClock                          0x20000004   Data           4  system_tm4c123.o(.data)
     __stdout                                 0x20000008   Data           4  stdout.o(.data)
     __microlib_freelist                      0x2000000c   Data           4  mvars.o(.data)
@@ -438,9 +438,9 @@ Memory Map of the image
 
   Image Entry point : 0x000017f5
 
-  Load Region LR_1 (Base: 0x00000000, Size: 0x00001c9c, Max: 0xffffffff, ABSOLUTE)
+  Load Region LR_1 (Base: 0x00000000, Size: 0x00001ca4, Max: 0xffffffff, ABSOLUTE)
 
-    Execution Region ER_RO (Exec base: 0x00000000, Load base: 0x00000000, Size: 0x00001c88, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_RO (Exec base: 0x00000000, Load base: 0x00000000, Size: 0x00001c90, Max: 0xffffffff, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -471,24 +471,24 @@ Memory Map of the image
     0x00001b70   0x00001b70   0x0000000e   Code   RO          427    i.__scatterload_zeroinit  mc_w.l(handlers.o)
     0x00001b7e   0x00001b7e   0x00000002   PAD
     0x00001b80   0x00001b80   0x0000006c   Code   RO          374    i.malloc            mc_w.l(malloc.o)
-    0x00001bec   0x00001bec   0x0000007a   Data   RO          105    .constdata          images.o
-    0x00001c66   0x00001c66   0x00000002   PAD
-    0x00001c68   0x00001c68   0x00000020   Data   RO          423    Region$$Table       anon$$obj.o
+    0x00001bec   0x00001bec   0x00000082   Data   RO          105    .constdata          images.o
+    0x00001c6e   0x00001c6e   0x00000002   PAD
+    0x00001c70   0x00001c70   0x00000020   Data   RO          423    Region$$Table       anon$$obj.o
 
 
-    Execution Region ER_RW (Exec base: 0x20000000, Load base: 0x00001c88, Size: 0x00000014, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_RW (Exec base: 0x20000000, Load base: 0x00001c90, Size: 0x00000014, Max: 0xffffffff, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
-    0x20000000   0x00001c88   0x00000002   Data   RW          274    .data               serial_debug.o
-    0x20000002   0x00001c8a   0x00000002   PAD
-    0x20000004   0x00001c8c   0x00000004   Data   RW          343    .data               system_tm4c123.o
-    0x20000008   0x00001c90   0x00000004   Data   RW          372    .data               mc_w.l(stdout.o)
-    0x2000000c   0x00001c94   0x00000004   Data   RW          419    .data               mc_w.l(mvars.o)
-    0x20000010   0x00001c98   0x00000004   Data   RW          420    .data               mc_w.l(mvars.o)
+    0x20000000   0x00001c90   0x00000002   Data   RW          274    .data               serial_debug.o
+    0x20000002   0x00001c92   0x00000002   PAD
+    0x20000004   0x00001c94   0x00000004   Data   RW          343    .data               system_tm4c123.o
+    0x20000008   0x00001c98   0x00000004   Data   RW          372    .data               mc_w.l(stdout.o)
+    0x2000000c   0x00001c9c   0x00000004   Data   RW          419    .data               mc_w.l(mvars.o)
+    0x20000010   0x00001ca0   0x00000004   Data   RW          420    .data               mc_w.l(mvars.o)
 
 
-    Execution Region ER_ZI (Exec base: 0x20000014, Load base: 0x00001c9c, Size: 0x0000021c, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_ZI (Exec base: 0x20000014, Load base: 0x00001ca4, Size: 0x0000021c, Max: 0xffffffff, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -506,7 +506,7 @@ Image component sizes
 
        296         14          0          0          0       2641   adc.o
        708         32          0          0          0       5170   gpio_port.o
-         0          0        122          0          0        571   images.o
+         0          0        130          0          0        571   images.o
       2886         28          0          0          0       8240   lcd.o
        208         12          0          0          0      28948   main.o
        124          0          0          0          0       1939   pc_buffer.o
@@ -518,7 +518,7 @@ Image component sizes
        648         50          0          0          0       3500   uart.o
 
     ----------------------------------------------------------------------
-      6332        314        776          8        540      94595   Object Totals
+      6332        314        784          8        540      94595   Object Totals
          0          0         32          0          0          0   (incl. Generated)
          2          0          2          2          0          0   (incl. Padding)
 
@@ -560,15 +560,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      6528        346        776         20        540      93551   Grand Totals
-      6528        346        776         20        540      93551   ELF Image Totals
-      6528        346        776         20          0          0   ROM Totals
+      6528        346        784         20        540      93551   Grand Totals
+      6528        346        784         20        540      93551   ELF Image Totals
+      6528        346        784         20          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                 7304 (   7.13kB)
+    Total RO  Size (Code + RO Data)                 7312 (   7.14kB)
     Total RW  Size (RW Data + ZI Data)               560 (   0.55kB)
-    Total ROM Size (Code + RO Data + RW Data)       7324 (   7.15kB)
+    Total ROM Size (Code + RO Data + RW Data)       7332 (   7.16kB)
 
 ==============================================================================
 
