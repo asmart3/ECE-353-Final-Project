@@ -25,8 +25,8 @@ int main(void)
 	bool alert_move = false;
 	bool game_over = false;
 	tank player;
-	player.xPos = 40;
-	player.yPos = 40;
+	player.xPos = 160;
+	player.yPos = 160;
 	
 		//initialize_serial_debug();
 			
@@ -37,7 +37,7 @@ int main(void)
 	//	put_string("******************************\n\r");  
 
 		init_hardware();
-		
+		lcd_draw_image(player.xPos/8,tankWidthPixels,player.yPos/8,tankHeightPixels,tankBitmaps,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
 	
 	
 	while(!game_over){
@@ -46,24 +46,35 @@ int main(void)
 		}
 		//check x,y ps2 positions
 		if (ps2_get_x() > 0x7FF){
-			player.xPos -= 1;
-			alert_move = true;
+			if((player.xPos/8 - (tankWidthPixels/2))>0){
+				player.xPos -= 1;
+				alert_move = true;
+			}
 		}else if(ps2_get_x() < 0x700){
-			player.xPos += 1;
-			alert_move = true;
+			if((player.xPos/8 + (tankWidthPixels/2))<COLS){
+				player.xPos += 1;
+				alert_move = true;
+			}
 		}
 		
 		if (ps2_get_y() > 0x7FF){
-			player.yPos -= 1;
-			alert_move = true;
+			if((player.yPos/8 - (tankHeightPixels/2))>0){
+				player.yPos -= 1;
+				alert_move = true;
+			}
 		}else if(ps2_get_y() < 0x700){
-			player.yPos += 1;
-			alert_move = true;
+			if((player.yPos/8 + (tankHeightPixels/2))<ROWS){
+				player.yPos += 1;
+				alert_move = true;
+			}
 		}
 		
 	}
 	
 }  
+
+// Check if position is on screen edge
+
 
 //*****************************************************************************
 // Initializes all of the peripherls used in HW3
