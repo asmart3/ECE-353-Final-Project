@@ -31,24 +31,28 @@ void EnableInterrupts(void)
 // PlayerMovement
 void playerMove(tank *player,bool *alert_move){
 	if (ps2_get_x() > 0x7FF){
-			if((player->xPos/8 - (tankWidthPixels/2))>0){
+			if((player->xPos/8 - (upTankWidth/2))>0){
+				player->direction = left;
 				player->xPos -= 1;
 				*alert_move = true;
 			}
 		}else if(ps2_get_x() < 0x700){
-			if((player->xPos/8 + (tankWidthPixels/2))<COLS){
+			if((player->xPos/8 + (upTankWidth/2))<COLS){
+				player->direction = right;
 				player->xPos += 1;
 				*alert_move = true;
 			}
 		}
 		
 		if (ps2_get_y() > 0x7FF){
-			if((player->yPos/8 - (tankHeightPixels/2))>0){
+			if((player->yPos/8 - (upTankWidth/2))>0){
+				player->direction = up;
 				player->yPos -= 1;
 				*alert_move = true;
 			}
 		}else if(ps2_get_y() < 0x700){
-			if((player->yPos/8 + (tankHeightPixels/2))<ROWS){
+			if((player->yPos/8 + (upTankWidth/2))<ROWS){
+				player->direction = down;
 				player->yPos += 1;
 				*alert_move = true;
 			}
@@ -76,6 +80,7 @@ int main(void)
 	tank player;
 	player.xPos = 860;
 	player.yPos = 860;
+	player.direction = up;
 	
 		//initialize_serial_debug();
 			
@@ -86,7 +91,7 @@ int main(void)
 	//	put_string("******************************\n\r");  
 
 		init_hardware();
-		lcd_draw_image(player.xPos/8,tankWidthPixels,player.yPos/8,tankHeightPixels,tankBitmaps,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
+		lcd_draw_image(player.xPos/8,upTankWidth,player.yPos/8,upTankHeight,upTank,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
 		initBarriers();
 	
 	while(!game_over){
@@ -94,7 +99,21 @@ int main(void)
 		
 		
 		if(alert_move){
-			lcd_draw_image(player.xPos/8,tankWidthPixels,player.yPos/8,tankHeightPixels,tankBitmaps,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
+			switch(player.direction){
+				case up:
+					lcd_draw_image(player.xPos/8,upTankWidth,player.yPos/8,upTankHeight,upTank,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
+					break;
+				case down:
+					lcd_draw_image(player.xPos/8,downTankWidth,player.yPos/8,downTankHeight,downTank,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
+					break;
+				case left:
+					lcd_draw_image(player.xPos/8,leftTankWidth,player.yPos/8,leftTankHeight,leftTank,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
+					break;
+				case right:
+					lcd_draw_image(player.xPos/8,rightTankWidth,player.yPos/8,rightTankHeight,rightTank,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
+					break;
+			}
+				
 		}
 		//check x,y ps2 positions
 		playerMove(&player,&alert_move);

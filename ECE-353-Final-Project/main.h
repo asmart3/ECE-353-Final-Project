@@ -18,12 +18,13 @@
 
 extern void init_hardware(void);
 
+enum direction{up,down,left,right};
 
 typedef struct
 {
 	int xPos;
 	int yPos;
-	int direction;
+	enum direction direction;
 	int delay; // time since last shot
 }	tank;
 
