@@ -17,6 +17,8 @@
 #include "images.h"
 
 extern void init_hardware(void);
+extern void initialize_serial_debug(void);
+extern void put_string(char *data);
 
 enum direction{up,down,left,right};
 
