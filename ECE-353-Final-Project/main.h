@@ -12,7 +12,7 @@
 #include "ps2.h"
 #include "lcd.h"
 #include "serial_debug.h"
-//#include "timers.h"
+#include "timers.h"
 //#include "tank.h"
 #include "images.h"
 
