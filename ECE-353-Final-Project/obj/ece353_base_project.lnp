@@ -3,6 +3,7 @@
 ".\obj\images.o"
 ".\obj\barrier.o"
 ".\obj\tank.o"
+".\obj\print.o"
 ".\obj\gpio_port.o"
 ".\obj\timers.o"
 ".\obj\adc.o"

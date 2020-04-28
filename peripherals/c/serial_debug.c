@@ -111,7 +111,7 @@ int fgetc(FILE* stream)
 // ****************************************************************************/
 int fputc(int c, FILE* stream)
 {
-
+	FILE *file;
    if ( Tx_Interrupts_Enabled)
    {
       serial_debug_tx(SERIAL_DEBUG_UART_BASE, SERIAL_DEBUG_TX_BUF_PTR, c);

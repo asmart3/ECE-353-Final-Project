@@ -412,6 +412,16 @@
               <FileType>5</FileType>
               <FilePath>.\tank.h</FilePath>
             </File>
+            <File>
+              <FileName>print.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\print.c</FilePath>
+            </File>
+            <File>
+              <FileName>print.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\print.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

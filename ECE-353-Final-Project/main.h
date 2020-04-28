@@ -4,7 +4,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <string.h>
 #include <stdlib.h>
 
 #include "TM4C123.h"
@@ -15,6 +14,9 @@
 #include "timers.h"
 //#include "tank.h"
 #include "images.h"
+#include "driver_defines.h"
+#include "validate.h"
+#include "print.h"
 
 extern void init_hardware(void);
 extern void initialize_serial_debug(void);

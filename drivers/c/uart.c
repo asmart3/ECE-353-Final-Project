@@ -202,7 +202,7 @@ void uart_tx_poll(uint32_t base, char data)
 
   if ( data != 0)
   {
-    while( ((myUart->FR)&(UART_FR_TXFF)) != 0 );
+    while(((myUart->FR)&(UART_FR_TXFF)) != 0 );
     myUart->DR = data;
   }
   return;

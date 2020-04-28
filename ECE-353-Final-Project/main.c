@@ -130,15 +130,16 @@ int main(void)
 	player.yPos = 100 * SPEED;
 	player.direction = up;
 	
-		//initialize_serial_debug();
-			
-		//put_string("\n\r******************************\n\r");
-		//put_string("ECE353 Final Project Spring 2020\n\r");
-		//put_string("Jennifer Kaiser, Andrew Smart, Matthew Beyer");
-	//	put_string("\n\r");
-	//	put_string("******************************\n\r");  
+	init_hardware();
+	
+		
+		put_string("\n\r******************************\n\r");
+		put_string("ECE353 Final Project Spring 2020\n\r");
+		put_string("Jennifer Kaiser, Andrew Smart, Matthew Beyer\n\r");
+		put_string("******************************\n\r\n\r");  
 
-		init_hardware();
+		put_string("Running...");
+	
 		lcd_draw_image(player.xPos/SPEED,upTankWidth,player.yPos/SPEED,upTankHeight,upTank,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
 		initBarriers();
 	
@@ -185,7 +186,7 @@ void init_hardware(void)
   lcd_config_screen();
   lcd_clear_screen(LCD_COLOR_BLACK);
   ps2_initialize();
-  init_serial_debug(false,false);
+  init_serial_debug(true,true);
   // Update the Space Shipt 60 times per second.
   //gp_timer_config_32(TIMER2_BASE,TIMER_TAMR_TAMR_PERIOD, 1000000, false, true);
   //gp_timer_config_32(TIMER3_BASE,TIMER_TAMR_TAMR_PERIOD, 500000, false, true);
