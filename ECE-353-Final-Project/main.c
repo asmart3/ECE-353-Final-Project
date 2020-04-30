@@ -13,6 +13,7 @@ volatile PS2_DIR_t TANK_DIRECTION = PS2_DIR_CENTER;
 volatile bool enemy1dead = true;
 volatile bool enemy2dead = true;
 volatile bool enemy3dead = true;
+static const uint16_t   MOVE_AMOUNT[] = {25, 50, 75, 100, 125, 150, 175, 200};
 
 tank player;
 bool alert_move = false;
@@ -119,17 +120,32 @@ void newDirection(tank *enemy1, bool directionEnemy1, bool directionEnemy2, bool
 	}
 }
 
-
+uint16_t getTankMovement(tank *enemy) {
+	return MOVE_AMOUNT[rand() % 8];
+}
 
 
 //moves the enemy tanks and checks for collisions
 void enemy1Move(tank *enemy1, tank *enemy2, tank *enemy3, bool *alert_enemy1, bool *alert_enemy2, bool *alert_enemy3){
+	if(enemy1->moves == 0 || enemy1->moves == NULL) {
+		newDirection(enemy1, true, false, false);
+		enemy1->moves = getTankMovement(enemy1);
+	}
+	if(enemy2->moves == 0 || enemy2->moves == NULL) {
+		newDirection(enemy2, false, true, false);
+		enemy2->moves = getTankMovement(enemy2);
+	}
+	if(enemy3->moves == 0 || enemy3->moves == NULL) {
+		newDirection(enemy3, false, false, true);
+		enemy3->moves = getTankMovement(enemy3);
+	}
 	//checks for direction of enemy1
 	if (enemy1->direction == left) {
 		//checks for left edge of screen and barrier collison
 		if(((enemy1->xPos/SPEED - (upTankWidth/2))>0) && (!checkCollision(enemy1->xPos -1,enemy1->yPos))){
 				//moves enemy1 left one pixel
 			enemy1->xPos -= 1;
+			enemy1->moves--;
 		} else {
 			newDirection(enemy1, true, false, false);
 		}
@@ -139,6 +155,7 @@ void enemy1Move(tank *enemy1, tank *enemy2, tank *enemy3, bool *alert_enemy1, bo
 		if(((enemy1->xPos/SPEED + (upTankWidth/2))<COLS) && (!checkCollision(enemy1->xPos+1,enemy1->yPos))){
 				//moves enemy1 right one pixel
 			enemy1->xPos += 1;
+			enemy1->moves--;
 		} else {
 			newDirection(enemy1, true, false, false);
 		}
@@ -148,6 +165,7 @@ void enemy1Move(tank *enemy1, tank *enemy2, tank *enemy3, bool *alert_enemy1, bo
 		if(((enemy1->yPos/SPEED - (upTankWidth/2))>0) && (!checkCollision(enemy1->xPos,enemy1->yPos-1))){
 				//moves enemy1 up one pixel
 			enemy1->yPos -= 1;
+			enemy1->moves--;
 		} else {
 			newDirection(enemy1, true, false, false);
 		}
@@ -157,6 +175,7 @@ void enemy1Move(tank *enemy1, tank *enemy2, tank *enemy3, bool *alert_enemy1, bo
 		if(((enemy1->yPos/SPEED + (upTankWidth/2))<ROWS) && (!checkCollision(enemy1->xPos,enemy1->yPos+1))){
 				//moves enemy1 down one pixel
 			enemy1->yPos += 1;
+			enemy1->moves--;
 		} else {
 			newDirection(enemy1, true, false, false);
 		}
@@ -169,6 +188,7 @@ void enemy1Move(tank *enemy1, tank *enemy2, tank *enemy3, bool *alert_enemy1, bo
 		if(((enemy2->xPos/SPEED - (upTankWidth/2))>0) && (!checkCollision(enemy2->xPos -1,enemy2->yPos))){
 				//moves enemy1 left one pixel
 			enemy2->xPos -= 1;
+			enemy2->moves--;
 		} else {
 			newDirection(enemy2, false, true, false);
 		}
@@ -178,6 +198,7 @@ void enemy1Move(tank *enemy1, tank *enemy2, tank *enemy3, bool *alert_enemy1, bo
 		if(((enemy2->xPos/SPEED + (upTankWidth/2))<COLS) && (!checkCollision(enemy2->xPos+1,enemy2->yPos))){
 				//moves enemy1 right one pixel
 			enemy2->xPos += 1;
+			enemy2->moves--;
 		} else {
 			newDirection(enemy2, true, false, false);
 		}
@@ -187,6 +208,7 @@ void enemy1Move(tank *enemy1, tank *enemy2, tank *enemy3, bool *alert_enemy1, bo
 		if(((enemy2->yPos/SPEED - (upTankWidth/2))>0) && (!checkCollision(enemy2->xPos,enemy2->yPos-1))){
 				//moves enemy1 up one pixel
 			enemy2->yPos -= 1;
+			enemy2->moves--;
 		} else {
 			newDirection(enemy2, false, true, false);
 		}
@@ -196,6 +218,7 @@ void enemy1Move(tank *enemy1, tank *enemy2, tank *enemy3, bool *alert_enemy1, bo
 		if(((enemy2->yPos/SPEED + (upTankWidth/2))<ROWS) && (!checkCollision(enemy2->xPos,enemy2->yPos+1))){
 				//moves enemy1 down one pixel
 			enemy2->yPos += 1;
+			enemy2->moves--;
 		} else {
 			newDirection(enemy2, false, true, false);
 		}
@@ -208,6 +231,7 @@ void enemy1Move(tank *enemy1, tank *enemy2, tank *enemy3, bool *alert_enemy1, bo
 		if(((enemy3->xPos/SPEED - (upTankWidth/2))>0) && (!checkCollision(enemy3->xPos -1,enemy3->yPos))){
 				//moves enemy1 left one pixel
 			enemy3->xPos -= 1;
+			enemy3->moves--;
 		} else {
 			newDirection(enemy3, false, false, true);
 		}
@@ -217,6 +241,7 @@ void enemy1Move(tank *enemy1, tank *enemy2, tank *enemy3, bool *alert_enemy1, bo
 		if(((enemy3->xPos/SPEED + (upTankWidth/2))<COLS) && (!checkCollision(enemy3->xPos+1,enemy3->yPos))){
 				//moves enemy1 right one pixel
 			enemy3->xPos += 1;
+			enemy3->moves--;
 		} else {
 			newDirection(enemy3, false, false, true);
 		}
@@ -226,6 +251,7 @@ void enemy1Move(tank *enemy1, tank *enemy2, tank *enemy3, bool *alert_enemy1, bo
 		if(((enemy3->yPos/SPEED - (upTankWidth/2))>0) && (!checkCollision(enemy3->xPos,enemy3->yPos-1))){
 				//moves enemy1 up one pixel
 			enemy3->yPos -= 1;
+			enemy3->moves--;
 		} else {
 			newDirection(enemy3, false, false, true);
 		}
@@ -235,6 +261,7 @@ void enemy1Move(tank *enemy1, tank *enemy2, tank *enemy3, bool *alert_enemy1, bo
 		if(((enemy3->yPos/SPEED + (upTankWidth/2))<ROWS) && (!checkCollision(enemy3->xPos,enemy3->yPos+1))){
 				//moves enemy1 down one pixel
 			enemy3->yPos += 1;
+			enemy3->moves--;
 		} else {
 			newDirection(enemy3, false, false, true);
 		}

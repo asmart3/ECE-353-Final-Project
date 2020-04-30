@@ -30,6 +30,7 @@ typedef struct
 	int yPos;
 	enum direction direction;
 	int delay; // time since last shot
+	int moves;
 }	tank;
 
 typedef struct
