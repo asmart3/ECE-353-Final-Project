@@ -53,4 +53,5 @@ typedef enum{
 
 extern volatile PS2_DIR_t PS2_DIR;
 extern volatile bool TIMER2_ALERT;
+extern volatile bool TIMER3_ALERT;
 #endif
