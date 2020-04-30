@@ -6,6 +6,7 @@ volatile PS2_DIR_t PS2_DIR = PS2_DIR_CENTER;
 volatile bool TIMER2_ALERT = false;
 volatile PS2_DIR_t check = NULL;
 bool trigger_timer1 = false;
+volatile bool TIMER3_ALERT = false;
 //*****************************************************************************
 // Returns the most current direction that was pressed.
 //*****************************************************************************
@@ -54,11 +55,11 @@ void TIMER2A_Handler(void)
 }
 
 //*****************************************************************************
-// TIMER3 ISR is used to determine when to move the spaceship
+// TIMER3 ISR is used to determine when to move the enemie's tank
 //*****************************************************************************
 void TIMER3A_Handler(void)
 {	
-
+	TIMER3_ALERT = true;
 	// Clear the interrupt
 	TIMER3->ICR |= TIMER_ICR_TATOCINT;  
 }
