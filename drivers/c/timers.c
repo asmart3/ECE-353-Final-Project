@@ -240,3 +240,15 @@ bool gp_timer_config_32(uint32_t base_addr, uint32_t mode, uint32_t time_count, 
   
   return true;  
 }
+//32-bit timer to generate an interupt every 1 second
+void config_timer1()
+{
+	TIMER0_Type * timer = (TIMER0_Type *)TIMER1_BASE;
+	gp_timer_config_32(TIMER1_BASE, TIMER_TAMR_TAMR_PERIOD, 50000000, true, true);
+	//to set the interrupt priority
+	NVIC_SetPriority(TIMER1A_IRQn, 1);
+	//enables the interupt 
+	NVIC_EnableIRQ(TIMER1A_IRQn);
+	//enables the timer
+	timer->CTL |= TIMER_CTL_TAEN;
+}

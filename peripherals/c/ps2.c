@@ -34,11 +34,80 @@
 *******************************************************************************/
 static void initialize_adc_gpio_pins(void)
 {
-	gpio_enable_port(PS2_GPIO_BASE);
-	gpio_config_alternate_function(PS2_GPIO_BASE,(PS2_X_BIT_NUM|PS2_Y_BIT_NUM));
-
-	gpio_config_analog_enable(PS2_GPIO_BASE,(PS2_X_BIT_NUM|PS2_Y_BIT_NUM));
+  gpio_enable_port(PS2_GPIO_ANALOG_BASE);
+  gpio_config_enable_input(PS2_GPIO_ANALOG_BASE, PS2_X_DIR_PIN | PS2_Y_DIR_PIN);
+  gpio_config_analog_enable(PS2_GPIO_ANALOG_BASE, PS2_X_DIR_PIN | PS2_Y_DIR_PIN);
+  gpio_config_alternate_function(PS2_GPIO_ANALOG_BASE, PS2_X_DIR_PIN | PS2_Y_DIR_PIN);
 }
+
+
+/*******************************************************************************
+* Function Name: ps2_configure_digital_comparitors
+********************************************************************************
+* Summary:
+* Configures SSMUX2 to convert the raw ADC values.
+*
+* Return:
+*  void
+*
+*******************************************************************************/
+static void ps2_configure_adc(void)
+{
+ // Configure SSMUX2 to read the raw ADC values
+		
+  ADC0->SSMUX2 = PS2_X_DIR_CH << 4 | PS2_Y_DIR_CH;  // Set Channels
+    
+  // Enable the interrupts for SS2
+  ADC0->IM |= ADC_IM_MASK2;
+  
+  // Set the end of the sequence and when to generate interrupts
+  ADC0->SSCTL2 = ADC_SSCTL2_IE1 | ADC_SSCTL2_END1;
+  
+  NVIC_EnableIRQ(ADC0SS2_IRQn);
+  NVIC_SetPriority(ADC0SS2_IRQn ,3);
+  
+  ADC0->ACTSS |= ADC_ACTSS_ASEN2;  // Enable SS2
+  
+}
+//*****************************************************************************
+// Initializes the ADC0 to use SS2 to convert both the X and Y pots for the
+// PS2 joystick.  The ADC is triggered by TIMER4 interrupts.
+//*****************************************************************************
+bool ps2_initialize_adc(void)
+{
+
+ // Turn on the ADC Clock
+  SYSCTL->RCGCADC |= SYSCTL_RCGCADC_R0;
+  
+  // Wait for ADCx to become ready
+  while( (SYSCTL_PRADC_R0 & SYSCTL->PRADC) != SYSCTL_PRADC_R0){}
+  
+  // disable all the sample sequencers
+  ADC0->ACTSS &= ~(ADC_ACTSS_ASEN0 | ADC_ACTSS_ASEN1| ADC_ACTSS_ASEN2| ADC_ACTSS_ASEN3);
+
+	ADC0->ISC = 0xFFFFFFFF;
+
+  // Sequencer 3 is the lowest priority
+  ADC0->SSPRI = ADC_SSPRI_SS3_4TH | ADC_SSPRI_SS2_3RD | ADC_SSPRI_SS1_2ND | ADC_SSPRI_SS0_1ST;
+
+	// Set all the sample sequencers to be triggered by software.
+  ADC0->EMUX = 0 ;
+  
+    // Clear Averaging Bits
+  ADC0->SAC &= ~ADC_SAC_AVG_M  ;
+  
+  // Average 64 samples
+  ADC0->SAC |= ADC_SAC_AVG_8X;
+
+#if DCOMP_ENABLE    
+  ps2_configure_digital_comparitors();
+#endif
+
+  ps2_configure_adc();
+  
+  return true;
+}
+
 
 /*******************************************************************************
 * Function Name: ps2_initialize
@@ -49,7 +118,7 @@ static void initialize_adc_gpio_pins(void)
 void ps2_initialize(void)
 {
 	initialize_adc_gpio_pins();
-	initialize_adc(PS2_ADC_BASE);
+	ps2_initialize_adc();
 }
 
 /*******************************************************************************
@@ -61,7 +130,7 @@ void ps2_initialize(void)
 uint16_t ps2_get_x(void)
 {
   uint16_t adc_val;
-  adc_val = get_adc_value(PS2_ADC_BASE,PS2_X_ADC_CHANNEL);
+  
   return adc_val;
 }
 
@@ -74,7 +143,6 @@ uint16_t ps2_get_x(void)
 uint16_t ps2_get_y(void)
 {
   uint16_t adc_val;
-  adc_val = get_adc_value(PS2_ADC_BASE,PS2_Y_ADC_CHANNEL);
+  
   return adc_val;
 }
-

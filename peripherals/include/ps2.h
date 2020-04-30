@@ -22,6 +22,109 @@
 #ifndef __PS2_H__
 #define __PS2_H__
 
+#define STAFF   1
+#define DCOMP_ENABLE  0
+
+
+
+#if STAFF
+#include <stdint.h>
+#include <stdbool.h>
+
+#include "gpio_port.h"
+#include "adc.h"
+#include "gptimer.h"
+#include "driver_defines.h"
+
+//=============================================================================
+// STAFF STAFF STAFF STAFF STAFF STAFF STAFF STAFF STAFF STAFF STAFF STAFF 
+//=============================================================================
+
+#if 0
+typedef enum{
+  PS2_DIR_UP,
+  PS2_DIR_DOWN,
+  PS2_DIR_LEFT,
+  PS2_DIR_RIGHT,
+  PS2_DIR_CENTER,
+  PS2_DIR_INIT,
+} PS2_DIR_t;
+#endif
+
+
+
+
+//*****************************************************************************
+// Fill out the #defines below to configure which pins are connected to
+// the directional buttons
+//*****************************************************************************
+#define   PS2_GPIO_ANALOG_BASE 			GPIOE_BASE
+#define   PS2_X_DIR_PIN      				PE3
+#define   PS2_X_DIR_CH							1
+#define   PS2_Y_DIR_PIN      				PE2
+#define   PS2_Y_DIR_CH							0
+
+#define   PS2_ADC_BASE              ADC0_BASE
+
+#define PS2_ADC_LOW_THRESHOLD		    0x0400
+#define PS2_ADC_HIGH_THRESHOLD	    0x0C0
+
+#define PS2_SAMPLE_TICKS						50000
+
+// Set the analog channel for each direction
+#define   PS2_X_ADC_CHANNEL  1
+#define   PS2_Y_ADC_CHANNEL  0
+
+#define ADC_LOW_THRESHOLD		0x0600
+#define ADC_MID_THRESHOLD	  0x0800
+#define ADC_HIGH_THRESHOLD	0x0A00
+
+//*****************************************************************************
+// Used to initialize the PS2 joystick for both the analog inputs and the 
+// push button.  
+//
+// Configuration Info
+//		Fill out relevant information in boardUtil.h.  boardUtil.h defines 
+//		how various peripherals are physically connected to the board.
+//*****************************************************************************
+void ps2_initialize(void);
+
+/*******************************************************************************
+* Function Name: ps2_disable
+********************************************************************************
+* Disables the timer and ADC used for the PS2 Joystick.
+*******************************************************************************/
+void ps2_disable(void);
+
+//*****************************************************************************
+// Returns the most current reading of the X direction  Only the lower 12-bits
+// contain data.
+//*****************************************************************************
+uint16_t ps2_get_x(void);
+
+//*****************************************************************************
+// Returns the most current reading of the Y direction.  Only the lower 12-bits
+// contain data.
+//*****************************************************************************
+uint16_t ps2_get_y(void);
+
+//*****************************************************************************
+// STAFF: Returns if the pushbutton is currently pressed.
+//*****************************************************************************
+bool ps2_get_pressed(void);
+
+#if 0
+//*****************************************************************************
+// STAFF: Returns the most current direction that was pressed.
+//*****************************************************************************
+PS2_DIR_t ps2_get_direction(void);
+#endif
+
+//=============================================================================
+// STUDENT STUDENT STUDENT STUDENT STUDENT STUDENT STUDENT STUDENT STUDENT
+//=============================================================================
+#else
+
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -35,16 +138,16 @@
 #define   PS2_GPIO_BASE    GPIOE_BASE
 
 // ADD CODE
-// Define which bit number ( 0 through 7) each signal is connected to on the GPIO port.
-// This bit number is NOT the value listed in the Pin Number column of the datasheet.  
-// As an example, if the analog input was connected to pin PD2, you would set the bit
+// Define which pin number ( 0 through 7) each signal is connected to on the GPIO port.
+// This pin number is NOT the value listed in the Pin Number column of the datasheet.  
+// As an example, if the analog input was connected to pin PD2, you would set the pin
 // number to 2.
-#define   PS2_X_BIT_NUM      3
-#define   PS2_Y_BIT_NUM      2
+#define   PS2_X_PIN_NUM      3
+#define   PS2_Y_PIN_NUM      2
 
 // Macros passed to the gpio functions that are used to configure the GPIO port.
-#define   PS2_X_DIR_MASK     (1 << PS2_X_BIT_NUM)
-#define   PS2_Y_DIR_MASK     (1 << PS2_Y_BIT_NUM)
+#define   PS2_X_DIR_MASK     (1 << PS2_X_PIN_NUM)
+#define   PS2_Y_DIR_MASK     (1 << PS2_Y_PIN_NUM)
 
 // ADD CODE
 // Define the base addresses of the the ADC you are going to use to either ADC0 or ADC1.
@@ -84,3 +187,5 @@ uint16_t ps2_get_y(void);
 
 #endif
 
+
+#endif

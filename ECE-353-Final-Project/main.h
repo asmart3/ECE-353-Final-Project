@@ -40,4 +40,17 @@ typedef struct
 	int height;
 	bool broken;
 } barrier;
+
+typedef enum{
+  PS2_DIR_UP,
+  PS2_DIR_DOWN,
+  PS2_DIR_LEFT,
+  PS2_DIR_RIGHT,
+  PS2_DIR_CENTER,
+  PS2_DIR_INIT,
+} PS2_DIR_t;
+
+
+extern volatile PS2_DIR_t PS2_DIR;
+extern volatile bool TIMER2_ALERT;
 #endif

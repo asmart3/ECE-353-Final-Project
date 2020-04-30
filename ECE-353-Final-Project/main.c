@@ -7,7 +7,11 @@
 barrier barriers[5];
 int numBarriers = 5;
 int SPEED = 4; //lower number is faster
+//direction of the player's tank
+volatile PS2_DIR_t TANK_DIRECTION = PS2_DIR_CENTER;
 
+tank player;
+bool alert_move = false;
 //*****************************************************************************
 //*****************************************************************************
 void DisableInterrupts(void)
@@ -55,9 +59,11 @@ bool checkCollision(int xPos, int yPos){
 
 
 // PlayerMovement
-void playerMove(tank *player,bool *alert_move){
-	if (ps2_get_x() > 0x8A5){
+void playerMove(tank *player,bool *alert_move, volatile PS2_DIR_t TANK_DIRECTION){
+	if (TANK_DIRECTION == PS2_DIR_LEFT){
+		//checks for left edge of screen
 			if((player->xPos/SPEED - (upTankWidth/2))>0){
+				//checks for collision of barrier
 				if(!checkCollision(player->xPos -1,player->yPos)){
 					player->direction = left;
 					player->xPos -= 1;
@@ -65,8 +71,10 @@ void playerMove(tank *player,bool *alert_move){
 				}
 				
 			}
-		}else if(ps2_get_x() < 0x700){
+		}else if(TANK_DIRECTION == PS2_DIR_RIGHT){
+			//checks for right edge of screen
 			if((player->xPos/SPEED + (upTankWidth/2))<COLS){
+				//checks for collision of barrier
 				if(!checkCollision(player->xPos+1,player->yPos)){
 					player->direction = right;
 					player->xPos += 1;
@@ -75,16 +83,20 @@ void playerMove(tank *player,bool *alert_move){
 			}
 		}
 		
-		if (ps2_get_y() > 0x8A5){
+		if (TANK_DIRECTION == PS2_DIR_UP){
+			//checks for top edge of screen
 			if((player->yPos/SPEED - (upTankWidth/2))>0){
+				//checks for collision of barrier
 				if(!checkCollision(player->xPos,player->yPos-1)){
 					player->direction = up;
 					player->yPos -= 1;
 					*alert_move = true;
 				}
 			}
-		}else if(ps2_get_y() < 0x700){
+		}else if(TANK_DIRECTION == PS2_DIR_DOWN){
+			//checks for bottom of screen
 			if((player->yPos/SPEED + (upTankWidth/2))<ROWS){
+				//checks for collision of barrier
 				if(!checkCollision(player->xPos,player->yPos+1)){
 					player->direction = down;
 					player->yPos += 1;
@@ -146,7 +158,7 @@ int main(void)
 	while(!game_over){
 		
 		
-		
+		//draws the players tank according to direction
 		if(alert_move){
 			switch(player.direction){
 				case up:
@@ -164,8 +176,14 @@ int main(void)
 			}
 				
 		}
-		//check x,y ps2 positions
-		playerMove(&player,&alert_move);
+		//uses interupts to move the player
+		if(TIMER2_ALERT){
+			//check x,y ps2 positions
+			
+			playerMove(&player, &alert_move, PS2_DIR);
+			TIMER2_ALERT = false;
+		}
+		
 		
 		//barriers
 		drawBarriers();
@@ -188,9 +206,9 @@ void init_hardware(void)
   ps2_initialize();
   init_serial_debug(true,true);
   // Update the Space Shipt 60 times per second.
-  //gp_timer_config_32(TIMER2_BASE,TIMER_TAMR_TAMR_PERIOD, 1000000, false, true);
-  //gp_timer_config_32(TIMER3_BASE,TIMER_TAMR_TAMR_PERIOD, 500000, false, true);
-  //gp_timer_config_32(TIMER4_BASE,TIMER_TAMR_TAMR_PERIOD, 50000, false, true);
+  gp_timer_config_32(TIMER2_BASE,TIMER_TAMR_TAMR_PERIOD, 1000000, false, true);
+  gp_timer_config_32(TIMER3_BASE,TIMER_TAMR_TAMR_PERIOD, 500000, false, true);
+  gp_timer_config_32(TIMER4_BASE,TIMER_TAMR_TAMR_PERIOD, 50000, false, true);
 }
 
 
