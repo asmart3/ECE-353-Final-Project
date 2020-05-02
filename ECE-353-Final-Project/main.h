@@ -12,11 +12,14 @@
 #include "lcd.h"
 #include "serial_debug.h"
 #include "timers.h"
-//#include "tank.h"
+#include "ft6x06.h"
 #include "images.h"
 #include "driver_defines.h"
 #include "validate.h"
 #include "print.h"
+#include "launchpad_io.h"
+#include "interrupts.h"
+
 
 extern void init_hardware(void);
 extern void initialize_serial_debug(void);
@@ -42,6 +45,14 @@ typedef struct
 	bool broken;
 } barrier;
 
+typedef struct
+{
+	int xPos;
+	int yPos;
+	enum direction direction;
+	bool active;	
+}bullet;
+
 typedef enum{
   PS2_DIR_UP,
   PS2_DIR_DOWN,
@@ -53,6 +64,8 @@ typedef enum{
 
 
 extern volatile PS2_DIR_t PS2_DIR;
+extern volatile bool TIMER1_ALERT;
 extern volatile bool TIMER2_ALERT;
 extern volatile bool TIMER3_ALERT;
+extern volatile uint8_t DUTY_CYCLE;
 #endif

@@ -14,3 +14,4 @@
 .\obj\ps2.o: C:\Users\Matthew\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\mpu_armv7.h
 .\obj\ps2.o: C:\Users\Matthew\AppData\Local\Arm\Packs\Keil\TM4C_DFP\1.1.0\Device\Include\TM4C123\system_TM4C123.h
 .\obj\ps2.o: ..\drivers\include\adc.h
+.\obj\ps2.o: ..\drivers\include\gptimer.h

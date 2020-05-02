@@ -14,10 +14,18 @@ volatile PS2_DIR_t TANK_DIRECTION = PS2_DIR_CENTER;
 volatile bool enemy1dead = true;
 volatile bool enemy2dead = true;
 volatile bool enemy3dead = true;
+
+//LED blink
+uint8_t count = 0;
+
 static const uint16_t   MOVE_AMOUNT[] = {100, 150, 100, 100, 125, 150, 175, 200};
 
-tank player;
+
 bool alert_move = false;
+
+//player bullets
+bullet bullet_array[3];
+
 //*****************************************************************************
 //*****************************************************************************
 void DisableInterrupts(void)
@@ -624,9 +632,50 @@ void drawBarriers(){
 	for(i=0;i<numBarriers;i++){
 		if(!barriers[i].broken)
 			lcd_draw_box(barriers[i].xPos,barriers[i].width,barriers[i].yPos,barriers[i].height,LCD_COLOR_RED,LCD_COLOR_BLACK,2);
+	}	
+}
+
+void updateBullets(tank *enemy1, tank *enemy2, tank *enemy3){
+	int i;
+	for(i = 0; i<3;i++){
+		//if active, we need to move it in its direction, check if it hit the edge of screen, check if it hit enemy, and draw on lcd.
+		if(bullet_array[i].active){
+				//moves bullet in direction, and draws it in that direction.
+				switch(bullet_array[i].direction){
+					case up: 
+							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 2,bullet_array[i].yPos + 6,LCD_COLOR_BLACK);
+							bullet_array[i].yPos--;
+							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 2,bullet_array[i].yPos + 6,LCD_COLOR_WHITE);
+							break;
+					case down:
+							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 2,bullet_array[i].yPos + 6,LCD_COLOR_BLACK);
+							bullet_array[i].yPos++;
+							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 2,bullet_array[i].yPos + 6,LCD_COLOR_WHITE);
+							break;
+					case right:
+							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 6,bullet_array[i].yPos + 2,LCD_COLOR_BLACK);
+							bullet_array[i].xPos++;
+							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 6,bullet_array[i].yPos + 2,LCD_COLOR_WHITE);
+							break;
+					case left:
+							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 6,bullet_array[i].yPos + 2,LCD_COLOR_BLACK);
+							bullet_array[i].xPos--;
+							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 6,bullet_array[i].yPos + 2,LCD_COLOR_WHITE);
+							break;
+				}
+				
+				//check if hit edge of screen
+				if(bullet_array[i].xPos < 1 || bullet_array[i].xPos > COLS-1)
+					bullet_array[i].active = false;
+				if(bullet_array[i].yPos < 1 || bullet_array[i].yPos > 320)
+					bullet_array[i].active = false;
+				
+				//check if hit enemy
+				
+				
+				
+		}
 	}
-	
-		
 }
 
 //resets the enemies postions so that they can be redrawn
@@ -662,6 +711,7 @@ void checkEnemydead(tank *enemy1, tank *enemy2, tank *enemy3){
 
 int main(void)
 {
+	int i;
 	bool alert_move = false;
 	bool game_over = false;
 	bool alert_enemy1 = false;
@@ -674,6 +724,12 @@ int main(void)
 	player.xPos = 100 * SPEED;
 	player.yPos = 100 * SPEED;
 	player.direction = up;
+	
+	//player bullets initialize to not active.
+	
+	for(i = 0;i<3;i++)
+		bullet_array[i].active = false;
+	
 	init_hardware();
 	
 		
@@ -689,6 +745,7 @@ int main(void)
 		initBarriers();
 	
 	while(!game_over){
+		
 		
 		//draws the players tank according to direction
 		if(alert_move){
@@ -759,6 +816,15 @@ int main(void)
 			}
 				
 		}
+		//if(TIMER1_ALERT){
+			//Blink LED
+			if(count < DUTY_CYCLE)
+				lp_io_set_pin(BLUE_M);
+			else
+				lp_io_clear_pin(BLUE_M);
+			count = (count+1) %100;
+			
+		//}
 		//uses interupts to move the player
 		if(TIMER2_ALERT){
 			//check x,y ps2 positions
@@ -771,7 +837,21 @@ int main(void)
 		}
 		//barriers
 		drawBarriers();
+		updateBullets(&enemy1, &enemy2, &enemy3);
 		
+		if(ft6x06_read_td_status()!=0){
+			//find next inactive bullet to send
+			for(i=0;i<3;i++){
+				if(!bullet_array[i].active)
+				{
+					bullet_array[i].yPos = player.yPos;
+					bullet_array[i].xPos = player.xPos;
+					bullet_array[i].direction = player.direction;
+					bullet_array[i].active = true;
+					break;
+				}
+			}
+		}
 	}
 	
 }  
@@ -784,12 +864,16 @@ int main(void)
 //*****************************************************************************
 void init_hardware(void)
 {
+	lp_io_init();
   lcd_config_gpio();
   lcd_config_screen();
   lcd_clear_screen(LCD_COLOR_BLACK);
   ps2_initialize();
   init_serial_debug(true,true);
-  // Update the Space Shipt 60 times per second.
+	ft6x06_init();
+	EnableInterrupts();
+  //
+	config_timer1();
   gp_timer_config_32(TIMER2_BASE,TIMER_TAMR_TAMR_PERIOD, 1000000, false, true);
   gp_timer_config_32(TIMER3_BASE,TIMER_TAMR_TAMR_PERIOD, 500000, false, true);
   gp_timer_config_32(TIMER4_BASE,TIMER_TAMR_TAMR_PERIOD, 50000, false, true);

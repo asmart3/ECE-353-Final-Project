@@ -126,5 +126,7 @@ void test_ft6x06(void);
 //*****************************************************************************
 bool ft6x06_init(void);
 
+uint8_t ft6x06_read_td_status(void);
+
 #endif
 

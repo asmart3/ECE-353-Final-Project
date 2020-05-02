@@ -11,7 +11,6 @@
 #include "ps2.h"
 #include "lcd.h"
 #include "timers.h"
-#include "main.h"
 #include "images.h"
 #include "driver_defines.h"
 

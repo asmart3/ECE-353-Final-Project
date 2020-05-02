@@ -1,5 +1,6 @@
 #include "interrupts.h"
 #include "main.h"
+volatile uint8_t DUTY_CYCLE = 0;
 static volatile uint16_t PS2_X_DATA = 0;
 static volatile uint16_t PS2_Y_DATA = 0;
 volatile PS2_DIR_t PS2_DIR = PS2_DIR_CENTER;
@@ -7,6 +8,8 @@ volatile bool TIMER2_ALERT = false;
 volatile PS2_DIR_t check = NULL;
 bool trigger_timer1 = false;
 volatile bool TIMER3_ALERT = false;
+volatile bool TIMER1_ALERT = false;
+bool rising = true;
 //*****************************************************************************
 // Returns the most current direction that was pressed.
 //*****************************************************************************
@@ -39,6 +42,26 @@ PS2_DIR_t ps2_get_direction(void)
 	}
 	
   return return_val;
+}
+
+void TIMER1A_Handler(void){
+	TIMER1_ALERT = true;
+	
+	if(rising){
+		if(DUTY_CYCLE>99)
+			rising = false;
+		else
+			DUTY_CYCLE++;
+	}
+	else{
+		if(DUTY_CYCLE<1)
+			rising = true;
+		else
+			DUTY_CYCLE--;
+	}
+	
+	// Clear the interrupt
+	TIMER1->ICR |= TIMER_ICR_TATOCINT;
 }
 
 //*****************************************************************************

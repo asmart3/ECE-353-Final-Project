@@ -18,11 +18,16 @@
 .\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\errno.h
 .\obj\main.o: ..\peripherals\include\ps2.h
 .\obj\main.o: ..\drivers\include\adc.h
+.\obj\main.o: ..\drivers\include\gptimer.h
 .\obj\main.o: ..\peripherals\include\lcd.h
 .\obj\main.o: ..\peripherals\include\serial_debug.h
 .\obj\main.o: ..\drivers\include\pc_buffer.h
 .\obj\main.o: ..\drivers\include\uart.h
 .\obj\main.o: ..\drivers\include\timers.h
+.\obj\main.o: ..\peripherals\include\ft6x06.h
+.\obj\main.o: ..\drivers\include\i2c.h
 .\obj\main.o: images.h
 .\obj\main.o: ..\peripherals\include\validate.h
 .\obj\main.o: print.h
+.\obj\main.o: ..\peripherals\include\launchpad_io.h
+.\obj\main.o: interrupts.h

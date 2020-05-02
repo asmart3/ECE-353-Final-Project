@@ -467,6 +467,16 @@
               <FileType>1</FileType>
               <FilePath>..\drivers\c\uart.c</FilePath>
             </File>
+            <File>
+              <FileName>i2c.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\drivers\c\i2c.c</FilePath>
+            </File>
+            <File>
+              <FileName>i2c.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\drivers\include\i2c.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -486,6 +496,21 @@
               <FileName>ps2.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\peripherals\c\ps2.c</FilePath>
+            </File>
+            <File>
+              <FileName>ft6x06.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\peripherals\c\ft6x06.c</FilePath>
+            </File>
+            <File>
+              <FileName>ft6x06.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\peripherals\include\ft6x06.h</FilePath>
+            </File>
+            <File>
+              <FileName>launchpad_io.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\peripherals\c\launchpad_io.c</FilePath>
             </File>
           </Files>
         </Group>
