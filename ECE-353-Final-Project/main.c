@@ -814,10 +814,7 @@ int main(void)
 			}
 				
 		}
-		//if(TIMER1_ALERT){
-
-			
-		//}
+		
 		//uses interupts to move the player
 		if(TIMER2_ALERT){
 			//check x,y ps2 positions
@@ -827,6 +824,7 @@ int main(void)
 		
 		if(TIMER3_ALERT){
 			enemy1Move(&player, &enemy1, &enemy2, &enemy3, &alert_enemy1, &alert_enemy2, &alert_enemy3);
+			TIMER3_ALERT = false;
 		}
 		//barriers
 		drawBarriers();
