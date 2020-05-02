@@ -1,6 +1,6 @@
 #include "interrupts.h"
 #include "main.h"
-volatile uint8_t DUTY_CYCLE = 0;
+int DUTY_CYCLE = 0;
 static volatile uint16_t PS2_X_DATA = 0;
 static volatile uint16_t PS2_Y_DATA = 0;
 volatile PS2_DIR_t PS2_DIR = PS2_DIR_CENTER;
@@ -10,6 +10,7 @@ bool trigger_timer1 = false;
 volatile bool TIMER3_ALERT = false;
 volatile bool TIMER1_ALERT = false;
 bool rising = true;
+uint8_t count=0;
 //*****************************************************************************
 // Returns the most current direction that was pressed.
 //*****************************************************************************
@@ -46,20 +47,13 @@ PS2_DIR_t ps2_get_direction(void)
 
 void TIMER1A_Handler(void){
 	TIMER1_ALERT = true;
+	//Blink LED
+	if(count < DUTY_CYCLE)
+		lp_io_set_pin(BLUE_M);
+	else
+		lp_io_clear_pin(BLUE_M);
 	
-	if(rising){
-		if(DUTY_CYCLE>99)
-			rising = false;
-		else
-			DUTY_CYCLE++;
-	}
-	else{
-		if(DUTY_CYCLE<1)
-			rising = true;
-		else
-			DUTY_CYCLE--;
-	}
-	
+	count = (count+1) %100;
 	// Clear the interrupt
 	TIMER1->ICR |= TIMER_ICR_TATOCINT;
 }
@@ -71,7 +65,19 @@ void TIMER2A_Handler(void)
 {	
 	
 	TIMER2_ALERT = true;
-	
+	//change duty cycle of LED in addition to moving tank
+	if(rising){
+		if(DUTY_CYCLE>100)
+			rising = false;
+		else
+			DUTY_CYCLE++;
+	}
+	else{
+		if(DUTY_CYCLE<0)
+			rising = true;
+		else
+			DUTY_CYCLE--;
+	}
 	
    // Clear the interrupt
 	TIMER2->ICR |= TIMER_ICR_TATOCINT;

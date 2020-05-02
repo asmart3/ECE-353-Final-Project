@@ -15,8 +15,6 @@ volatile bool enemy1dead = true;
 volatile bool enemy2dead = true;
 volatile bool enemy3dead = true;
 
-//LED blink
-uint8_t count = 0;
 
 static const uint16_t   MOVE_AMOUNT[] = {100, 150, 100, 100, 125, 150, 175, 200};
 
@@ -817,12 +815,7 @@ int main(void)
 				
 		}
 		//if(TIMER1_ALERT){
-			//Blink LED
-			if(count < DUTY_CYCLE)
-				lp_io_set_pin(BLUE_M);
-			else
-				lp_io_clear_pin(BLUE_M);
-			count = (count+1) %100;
+
 			
 		//}
 		//uses interupts to move the player

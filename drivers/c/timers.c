@@ -244,7 +244,7 @@ bool gp_timer_config_32(uint32_t base_addr, uint32_t mode, uint32_t time_count, 
 void config_timer1()
 {
 	TIMER0_Type * timer = (TIMER0_Type *)TIMER1_BASE;
-	gp_timer_config_32(TIMER1_BASE, TIMER_TAMR_TAMR_PERIOD, 50000000, true, true);
+	gp_timer_config_32(TIMER1_BASE, TIMER_TAMR_TAMR_PERIOD, 2000, true, true);
 	//to set the interrupt priority
 	NVIC_SetPriority(TIMER1A_IRQn, 1);
 	//enables the interupt 
