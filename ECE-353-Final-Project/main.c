@@ -17,7 +17,7 @@ volatile bool enemy3dead = true;
 volatile bool game_over = false; // indicates if game is over
 volatile bool paused = false; // indicates if game is paused
 volatile bool printPauseMsg = false; // indicates if game is paused
-int score = 0; // indicates the score of the current game
+uint8_t score = 0; // indicates the score of the current game
 
 // player/enemy tanks
 tank player;
@@ -55,6 +55,8 @@ void EnableInterrupts(void)
 }
 
 bool gameOver(bool game_over){
+	uint8_t HighScore;
+	
 	if (!game_over) {
 	return false;
 	} else {
@@ -65,6 +67,11 @@ bool gameOver(bool game_over){
 		EnableInterrupts();
 		lcd_clear_screen(LCD_COLOR_BLACK);
 		lp_io_clear_pin(BLUE_M);
+		//store new high score
+		eeprom_byte_read(EEPROM_I2C_BASE,EADDR,&HighScore);
+		printf("%d\n\r",HighScore);
+		if(score > HighScore)
+			eeprom_byte_write(EEPROM_I2C_BASE,EADDR,score);
 		return true;
 	}
 }
@@ -890,6 +897,7 @@ int main(void)
 {
 	int i;
 	uint8_t touch_event;
+	uint8_t HighScore;
 	char input;
 	bool alert_move = false;
 	bool alert_enemy1 = false;
@@ -916,7 +924,11 @@ int main(void)
 		put_string("Jennifer Kaiser, Andrew Smart, Matthew Beyer\n\r");
 		put_string("******************************\n\r\n\r");  
 
-		put_string("Running...\n\r");
+		eeprom_byte_write(EEPROM_I2C_BASE,EADDR,0x00);
+		put_string("High Score: ");
+		eeprom_byte_read(EEPROM_I2C_BASE,EADDR,&HighScore);
+		//HighScore += 0x31;
+		printf("%d\n\r",HighScore);
 		
 		//for push button
 		while(!io_expander_trigger) {
@@ -931,6 +943,9 @@ int main(void)
 			down_trigger = !(value_read & (1 << DIR_BTN_DOWN_PIN));
 		}
 		io_expander_trigger = false;
+		
+		put_string("Running...\n\r");
+
 	  //to draw the enemies
 		checkEnemydead(&enemy1, &enemy2, &enemy3);
 		lcd_draw_image(player.xPos/SPEED,upTankWidth,player.yPos/SPEED,upTankHeight,upTank,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
@@ -1234,6 +1249,7 @@ void init_hardware(void)
 	uart0_config_gpio();
 	uart_init(UART0_BASE, false, false);
 	io_expander_init();
+	eeprom_init();
 	EnableInterrupts();
   //
 	config_timer1();

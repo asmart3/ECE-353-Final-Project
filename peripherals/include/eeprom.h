@@ -6,7 +6,6 @@
 #include "i2c.h"
 #include "gpio_port.h"
 
-
 #define MCP24LC32AT_DEV_ID    0x50 
 #define FIXME 0x00
 

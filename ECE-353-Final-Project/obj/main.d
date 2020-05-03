@@ -32,3 +32,4 @@
 .\obj\main.o: ..\peripherals\include\launchpad_io.h
 .\obj\main.o: interrupts.h
 .\obj\main.o: ..\peripherals\include\io_expander.h
+.\obj\main.o: ..\peripherals\include\eeprom.h

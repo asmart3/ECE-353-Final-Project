@@ -522,6 +522,11 @@
               <FileType>5</FileType>
               <FilePath>..\peripherals\include\io_expander.h</FilePath>
             </File>
+            <File>
+              <FileName>eeprom.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\peripherals\c\eeprom.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
