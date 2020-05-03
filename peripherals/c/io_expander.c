@@ -92,6 +92,35 @@ static i2c_status_t ft6x06_read_data
   return status;
 }
 
+static i2c_status_t wait_for_write( int32_t  i2c_base)
+{
+  i2c_status_t status;
+  
+  if( !i2cVerifyBaseAddr(i2c_base) )
+  {
+    return  I2C_INVALID_BASE;
+  }
+
+  // Set the I2C address to be the EEPROM and in Write Mode
+  status = i2cSetSlaveAddr(i2c_base, MCP23017_DEV_ID, I2C_WRITE);
+
+  // Poll while the device is busy.  The  MCP24LC32AT will not ACK
+  // writing an address while the write has not finished.
+  do 
+  {
+    // The data we send does not matter.  This has been set to 0x00, but could
+    // be set to anything
+    status = i2cSendByte( i2c_base, 0x00, I2C_MCS_START | I2C_MCS_RUN | I2C_MCS_STOP);
+    
+    // Wait for the address to finish transmitting
+    while ( I2CMasterBusy(i2c_base)) {};
+    
+    // If the address was not ACKed, try again.
+  } while (I2CMasterAdrAck(i2c_base) == false);
+
+  return  status;
+}
+
 void io_expander_write_reg(uint8_t reg, uint8_t data){
 	i2c_status_t status;
   // Before doing anything, make sure the I2C device is idle
@@ -123,34 +152,7 @@ void io_expander_write_reg(uint8_t reg, uint8_t data){
   return;
 }
 
-static i2c_status_t wait_for_write( int32_t  i2c_base)
-{
-  i2c_status_t status;
-  
-  if( !i2cVerifyBaseAddr(i2c_base) )
-  {
-    return  I2C_INVALID_BASE;
-  }
 
-  // Set the I2C address to be the EEPROM and in Write Mode
-  status = i2cSetSlaveAddr(i2c_base, MCP23017_DEV_ID, I2C_WRITE);
-
-  // Poll while the device is busy.  The  MCP24LC32AT will not ACK
-  // writing an address while the write has not finished.
-  do 
-  {
-    // The data we send does not matter.  This has been set to 0x00, but could
-    // be set to anything
-    status = i2cSendByte( i2c_base, 0x00, I2C_MCS_START | I2C_MCS_RUN | I2C_MCS_STOP);
-    
-    // Wait for the address to finish transmitting
-    while ( I2CMasterBusy(i2c_base)) {};
-    
-    // If the address was not ACKed, try again.
-  } while (I2CMasterAdrAck(i2c_base) == false);
-
-  return  status;
-}
 
 
 //*****************************************************************************
