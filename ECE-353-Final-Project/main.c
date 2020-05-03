@@ -57,7 +57,9 @@ bool gameOver(bool game_over){
 	if (!game_over) {
 	return false;
 	} else {
-		put_string("Game Over");
+		DisableInterrupts();
+		put_string("You lose. Game Over.\n\r");
+		EnableInterrupts();
 		while (game_over) {
 			lcd_clear_screen(LCD_COLOR_BLACK);
 		}
@@ -398,8 +400,12 @@ bool tankCollision(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool 
 		return true;
 	}
 	if (needNewDirection4) {
-		put_string("\n\rRan into enemy tank. You lose.");
-		gameOver(true);
+		DisableInterrupts();
+		put_string("Ran into enemy tank.\n\r");
+		game_over = true;
+		paused = true;
+		//gameOver(true);
+		EnableInterrupts();
 		return true;
 	}
 	return false;
@@ -640,8 +646,11 @@ void playerMove(tank *player,bool *alert_move, volatile PS2_DIR_t TANK_DIRECTION
 			}
 		} else if (tankCollision(player, enemy2, enemy2, enemy3, true, false, false, false)){
 			game_over = true;
-			put_string("\n\rYou ran into an enemy tank. You lose.\n\r");
-			gameOver(game_over);
+			paused = true;
+			DisableInterrupts();
+			put_string("\n\rYou ran into an enemy tank.\n\r");
+			//gameOver(game_over);
+			EnableInterrupts();
 		}
 	
 }
@@ -794,7 +803,10 @@ void moveBullet(bullet *b) {
 	if(((b->xPos-2>=player.xPos-16)&&(b->xPos-2<=player.xPos+16)) || ((b->xPos+2<=player.xPos-16)&&(b->xPos+2>=player.xPos+16))) {
 		if(((b->yPos-2>=player.yPos-16)&&(b->yPos-2<=player.yPos+16)) || ((b->yPos+2<=player.yPos-16)&&(b->yPos+2>=player.yPos+16))) {
 			paused = true;
-			gameOver(true);
+			DisableInterrupts();
+			game_over = true;
+			//gameOver(true);
+			EnableInterrupts();
 		}
 	}
 	// checks if a bullet has hit an enemy, which kills the enemy and calls checkEnemyDead to respawn him
@@ -819,7 +831,9 @@ void moveBullet(bullet *b) {
 			// updates the score and prints it to serial debugger
 			if(b == &playerShot) {
 				score++;
+				DisableInterrupts();
 				printf("%d\n\r",score);
+				EnableInterrupts();
 			}
 		}
 	}
@@ -1046,7 +1060,7 @@ int main(void)
 		}
 		
 	}
-
+	
 	
 }  
 
@@ -1072,5 +1086,3 @@ void init_hardware(void)
   gp_timer_config_32(TIMER3_BASE,TIMER_TAMR_TAMR_PERIOD, 500000, false, true);
   gp_timer_config_32(TIMER4_BASE,TIMER_TAMR_TAMR_PERIOD, 50000, false, true);
 }
-
-
