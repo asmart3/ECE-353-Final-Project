@@ -512,6 +512,16 @@
               <FileType>1</FileType>
               <FilePath>..\peripherals\c\launchpad_io.c</FilePath>
             </File>
+            <File>
+              <FileName>io_expander.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\peripherals\c\io_expander.c</FilePath>
+            </File>
+            <File>
+              <FileName>io_expander.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\peripherals\include\io_expander.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

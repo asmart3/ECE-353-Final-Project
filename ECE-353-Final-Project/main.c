@@ -886,6 +886,7 @@ void moveBullet(bullet *b) {
 int main(void)
 {
 	int i;
+	uint8_t LEDpins =0x00;
 	uint8_t touch_event;
 	bool alert_move = false;
 	bool alert_enemy1 = false;
@@ -920,6 +921,7 @@ int main(void)
 	while(!gameOver(game_over)){
 		
 		while(!paused) {
+			io_expander_write_reg(MCP23017_GPIOA_R,score);
 			//draws the players tank according to direction
 			if(alert_move){
 				switch(player.direction){
@@ -1076,6 +1078,7 @@ int main(void)
 //*****************************************************************************
 void init_hardware(void)
 {
+
 	//for 30 seconds
 	int setGameEnd = 50000000*30;
 	lp_io_init();
@@ -1085,7 +1088,9 @@ void init_hardware(void)
   ps2_initialize();
   init_serial_debug(true,true);
 	ft6x06_init();
+	io_expander_init();
 	EnableInterrupts();
+
   //
 	config_timer1();
   gp_timer_config_32(TIMER2_BASE,TIMER_TAMR_TAMR_PERIOD, 1000000, false, true);

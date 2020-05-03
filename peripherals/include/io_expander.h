@@ -79,8 +79,9 @@
 
 
 
-
+static i2c_status_t io_expander_set_addr(uint32_t  i2c_base, uint8_t  reg_address);
 bool io_expander_init(void);
 void io_expander_write_reg(uint8_t reg, uint8_t data);
 uint8_t io_expander_read_reg(uint8_t);
+static i2c_status_t wait_for_write( int32_t  i2c_base);
 #endif
