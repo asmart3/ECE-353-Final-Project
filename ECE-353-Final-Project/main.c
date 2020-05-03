@@ -7,7 +7,7 @@
 barrier barriers[6];
 int numBarriers = 6;
 int SPEED = 1; //lower number is faster
-int ENEMYSPEED = 3;
+int ENEMYSPEED = 1;
 //direction of the player's tank
 volatile PS2_DIR_t TANK_DIRECTION = PS2_DIR_CENTER;
 
@@ -53,31 +53,13 @@ void EnableInterrupts(void)
   }
 }
 
-bool gameOver(bool game_over){
-	if (!game_over) {
-	return false;
-	} else {
-		DisableInterrupts();
-		put_string("Game Over.\n\r");
-		EnableInterrupts();
-		while (game_over) {
-			lcd_clear_screen(LCD_COLOR_BLACK);
-		}
-	}
-}
-
-
 //Check Tank Collision with Barrier
-bool checkCollision(int xPos, int yPos, bool ifEnemy){
+bool checkCollision(int xPos, int yPos){
 	int i;
 	int rightSide,bottomSide;
-	if (ifEnemy) {
-		xPos /=ENEMYSPEED;
-		yPos /=ENEMYSPEED;
-	} else {
-		xPos /=SPEED;
-		yPos /=SPEED;
-	}
+	
+	xPos /=SPEED;
+	yPos /=SPEED;
 	xPos -=16;
 	yPos -=16;
 	rightSide = xPos + upTankWidth;//+16;
@@ -97,6 +79,204 @@ bool checkCollision(int xPos, int yPos, bool ifEnemy){
 	
 	return false;
 }
+
+
+
+bool tankCollision(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool checkPlayer, bool checkEnemy1, bool checkEnemy2, bool checkEnemy3){
+	tank checker;
+	bool needNewDirection1 = false;
+	bool needNewDirection2 = false;
+	bool needNewDirection3 = false;
+	bool needNewDirection4 = false;
+	int downTankWidth1 = downTankWidth + 50;
+	int downTankWidth2 = downTankWidth + 20;
+	int downTankWidth3 = downTankWidth + 35;
+	//sets tank checker's cordinates to appropriate tank
+	if(checkPlayer){
+		checker.xPos = player->xPos/ENEMYSPEED;
+		checker.yPos = player->yPos/ENEMYSPEED;
+	} else if(checkEnemy1) {
+		checker.xPos = enemy1->xPos/ENEMYSPEED;
+		checker.yPos = enemy1->yPos/ENEMYSPEED;
+	} else if(checkEnemy2) {
+		checker.xPos = enemy2->xPos/ENEMYSPEED;
+		checker.yPos = enemy2->yPos/ENEMYSPEED;
+	} else if(checkEnemy3) {
+		checker.xPos = enemy3->xPos/ENEMYSPEED;
+		checker.yPos = enemy3->yPos/ENEMYSPEED;
+	}
+	//goes through checking the given tank's coordinates against those of the player's tank
+	if (checker.xPos - upTankWidth/2 >= player->xPos/SPEED - upTankWidth/2 && checker.xPos - upTankWidth/2 <= player->xPos/SPEED + upTankWidth/2 && checkPlayer == false){
+		// left-most x coordinate of the given is within the x coordinate range of the player
+		if (checker.yPos- upTankWidth/2 >= player->yPos/SPEED - upTankWidth/2 && checker.yPos - upTankWidth/2 <= player->yPos/SPEED + upTankWidth/2){
+			//tanks are touching, need a new direction
+			needNewDirection4 = true;
+		} else if (checker.yPos+ upTankWidth/2 >= player->yPos/SPEED - upTankWidth/2 && checker.yPos + upTankWidth/2 <= player->yPos/SPEED + upTankWidth/2){
+			//tanks are touching, need a new direction
+			needNewDirection4 = true;
+		}
+	}
+	else if (checker.xPos + upTankWidth/2 >= player->xPos/SPEED - upTankWidth/2 && checker.xPos + upTankWidth/2 <= player->xPos/SPEED + upTankWidth/2 && checkPlayer == false){
+		// right-most x coordinate of the given tank is within the x coordinate range of player
+		if(checker.yPos- upTankWidth/2 >= player->yPos/SPEED - upTankWidth/2 && checker.yPos- upTankWidth/2 <= player->yPos/SPEED + upTankWidth/2){
+			//tanks are touching, need a new direction
+			needNewDirection4 = true;
+		}
+		// up-most y coordinate of given tank is within y coordinate range of player, up/right side of ship is touching given tank
+		else if (checker.yPos+ upTankWidth/2 >= player->yPos/SPEED - upTankWidth/2 && checker.yPos + upTankWidth/2 <= player->yPos/SPEED + upTankWidth/2){
+			// down-most y coordinate of player tank is within y coordinate range of enemy1, down/right side of ship is touching enemy1
+			//tanks are touching, need a new direction
+			needNewDirection4 = true;
+		}
+			
+	}
+	if (!checkEnemy1) {
+		//checks given tank against enemy1
+		if (checker.xPos - upTankWidth/2   >= enemy1->xPos/ENEMYSPEED - downTankWidth1/2 && checker.xPos - downTankWidth1/2 <= enemy1->xPos/ENEMYSPEED + upTankWidth/2 ){
+			// left-most x coordinate of the given tank is within the x coordinate range of the enemy1
+			if (checker.yPos- upTankWidth/2 >= enemy1->yPos/ENEMYSPEED - downTankWidth1/2 && checker.yPos - downTankWidth1/2 <= enemy1->yPos/ENEMYSPEED + upTankWidth/2  ){
+				//tanks are touching, need a new direction
+				needNewDirection1 = true;
+			}
+			else if (checker.yPos+ upTankWidth/2 >= enemy1->yPos/ENEMYSPEED - downTankWidth1/2 && checker.yPos + upTankWidth/2 <= enemy1->yPos/ENEMYSPEED + upTankWidth/2  ){
+				//tanks are touching, need a new direction
+				needNewDirection1 = true;
+			}
+		}
+		else if (checker.xPos + upTankWidth/2  >= enemy1->xPos/ENEMYSPEED - downTankWidth1/2 && checker.xPos + upTankWidth/2 <= enemy1->xPos/ENEMYSPEED + upTankWidth/2 ){
+			// right-most x coordinate of the given tank is within the x coordinate range of enemy1
+			if(checker.yPos- downTankWidth1/2 >= enemy1->yPos/ENEMYSPEED - downTankWidth1/2 && checker.yPos- downTankWidth1/2 <= enemy1->yPos/ENEMYSPEED + upTankWidth/2 ){
+				//tanks are touching, need a new direction
+				needNewDirection1 = true;
+			}
+				// up-most y coordinate of given tank is within y coordinate range of enemy1, up/right side of ship is touching given tank
+			else if (checker.yPos+ upTankWidth/2  >= enemy1->yPos/ENEMYSPEED - downTankWidth1/2 && checker.yPos + upTankWidth/2 <= enemy1->yPos/ENEMYSPEED + upTankWidth/2 ){
+				// down-most y coordinate of player tank is within y coordinate range of enemy1, down/right side of ship is touching enemy1
+				//tanks are touching, need a new direction
+				needNewDirection1 = true;
+			}
+				
+		}
+	}
+	
+	//
+	//
+	//
+	//checks to see if given tank touches enemy2 at any point
+	if (!checkEnemy2) {
+		if (checker.xPos - downTankWidth2/2 >= enemy2->xPos/ENEMYSPEED - downTankWidth2/2 && checker.xPos - downTankWidth2/2 <= enemy2->xPos/ENEMYSPEED + upTankWidth/2 ){
+			// left-most x coordinate of the tank is within the x coordinate range of the enemy2
+			if (checker.yPos- downTankWidth2/2 >= enemy2->yPos/ENEMYSPEED - downTankWidth2/2 && checker.yPos - downTankWidth2/2 <= enemy2->yPos/ENEMYSPEED + upTankWidth/2 ){
+				//tanks are touching, need a new direction
+				needNewDirection2 = true;
+			}
+			else if (checker.yPos+ upTankWidth/2 >= enemy2->yPos/ENEMYSPEED - downTankWidth2/2 && checker.yPos+ upTankWidth/2 <= enemy2->yPos/ENEMYSPEED + upTankWidth/2 ){
+				//tanks are touching, need a new direction
+				needNewDirection2 = true;
+			}
+		}
+		else if (checker.xPos + upTankWidth/2  >= enemy2->xPos/ENEMYSPEED - downTankWidth2/2 && checker.xPos + upTankWidth/2 <= enemy2->xPos/ENEMYSPEED + upTankWidth/2 ){
+			// right-most x coordinate of the given tank is within the x coordinate range of enemy2
+			if(checker.yPos - downTankWidth2/2 >= enemy2->yPos/ENEMYSPEED - downTankWidth2/2 && checker.yPos - downTankWidth2/2 <= enemy2->yPos/ENEMYSPEED + upTankWidth/2 ){
+				// up-most y coordinate of given tank is within y coordinate range of enemy2, up/right side of ship is touching enemy2
+				//tanks are touching, need a new direction
+				needNewDirection2 = true;
+			}
+			else if (checker.yPos + upTankWidth/2 >= enemy2->yPos/ENEMYSPEED - downTankWidth2/2 && checker.yPos + upTankWidth/2 <= enemy2->yPos/ENEMYSPEED + upTankWidth/2 ){
+				// down-most y coordinate of given tank is within y coordinate range of enemy1, down/right side of ship is touching enemy2
+				//tanks are touching, need a new direction
+				needNewDirection2 = true;
+			}
+		}
+	}
+if (!checkEnemy3) {
+		if (checker.xPos - downTankWidth3/2  >= enemy3->xPos/ENEMYSPEED - downTankWidth3/2 && checker.xPos- downTankWidth3/2 <= enemy3->xPos/ENEMYSPEED + upTankWidth/2 ){
+			// left-most x coordinate of the given tank is within the x coordinate range of the enemy3
+			if (checker.yPos - downTankWidth3/2 >= enemy3->yPos/ENEMYSPEED - downTankWidth3/2 && checker.yPos - downTankWidth3/2 <= enemy3->yPos/ENEMYSPEED + upTankWidth/2 ){
+				//tanks are touching, need a new direction
+				needNewDirection3 = true;
+			}
+			else if (checker.yPos + upTankWidth/2  >= enemy3->yPos/ENEMYSPEED - downTankWidth3/2 && checker.yPos + upTankWidth/2 <= enemy3->yPos/ENEMYSPEED + upTankWidth/2 ){
+				//tanks are touching, need a new direction
+				needNewDirection3 = true;
+			}
+		}
+		else if (checker.xPos + upTankWidth/2  >= enemy3->xPos/ENEMYSPEED - downTankWidth3/2 && checker.xPos + upTankWidth/2 <= enemy3->xPos/ENEMYSPEED + upTankWidth/2 ){
+			// right-most x coordinate of the given tank is within the x coordinate range of enemy3
+			if(checker.yPos - downTankWidth3/2 >= enemy3->yPos/ENEMYSPEED - downTankWidth3/2 && checker.yPos- downTankWidth3/2 <= enemy3->yPos/ENEMYSPEED + upTankWidth/2 ){
+				// up-most y coordinate of given tank is within y coordinate range of enemy3, up/right side of ship is touching enemy3
+				//tanks are touching, need a new direction
+				return needNewDirection3 = true;
+			}	
+			else if (checker.yPos + upTankWidth/2 >= enemy3->yPos/ENEMYSPEED - downTankWidth3/2 && checker.yPos + upTankWidth/2 <= enemy3->yPos/ENEMYSPEED + upTankWidth/2 ){
+				// down-most y coordinate of player tank is within y coordinate range of given tank, down/right side of ship is touching enemy3
+				//tanks are touching, need a new direction
+				needNewDirection3 = true;
+			}
+		}
+	}
+
+	
+	
+	//completely changes enemies direction to the opposite direction
+	if (needNewDirection1 == true) {
+		switch(enemy1->direction){
+					enemy1->moves = 25;
+					case right:
+						enemy1->direction = left;
+						break;
+					case left:
+						enemy1->direction = right;	
+						break;
+					case down:
+						enemy1->direction = up;	
+						break;
+					case up:
+						enemy1->direction = down;
+						break;
+				}	
+	}
+	if (needNewDirection2 == true) {
+		switch(enemy2->direction){
+					enemy2->moves = 25;
+					case right:
+						enemy2->direction = left;
+						break;
+					case left:
+						enemy2->direction = right;	
+						break;
+					case down:
+						enemy2->direction = up;	
+						break;
+					case up:
+						enemy2->direction = down;
+						break;
+				}	
+	}
+	//switches enemy 3's direction to the opposite direction
+	if (needNewDirection3 == true) {
+		switch(enemy3->direction){
+					enemy3->moves = 25;
+					case right:
+						enemy3->direction = left;
+						break;
+					case left:
+						enemy3->direction = right;	
+						break;
+					case down:
+						enemy3->direction = up;	
+						break;
+					case up:
+						enemy3->direction = down;
+						break;
+				}	
+	}
+	if (needNewDirection1 | needNewDirection2 | needNewDirection3 | needNewDirection4) {
+		return true;
+	}
+	return false;
+}
+
 //generates a random new direction depending on which tank needs a new direction
 void newDirection(tank *enemy1, bool directionEnemy1, bool directionEnemy2, bool directionEnemy3){
 	//random direction where: 0 = left, 1 = right, 2 = up, 3 = right
@@ -162,256 +342,6 @@ void newDirection(tank *enemy1, bool directionEnemy1, bool directionEnemy2, bool
 		}
 	}
 }
-//resets the enemies postions so that they can be redrawn
-void checkEnemydead(tank *enemy1, tank *enemy2, tank *enemy3){
-	if (enemy1dead){
-		// clears the now dead tank
-		lcd_draw_image(enemy1->xPos/ENEMYSPEED,upTankWidth,enemy1->yPos/ENEMYSPEED,upTankHeight,upTank,LCD_COLOR_BLACK,LCD_COLOR_BLACK);
-		//changes enemy1's positon to the lower right corner
-		enemy1->xPos = 220*ENEMYSPEED;
-		enemy1->yPos = 300*ENEMYSPEED;
-		newDirection(enemy1, true, false, false);
-		//redraws the enemy1
-		lcd_draw_image(enemy1->xPos/ENEMYSPEED,upTankWidth,enemy1->yPos/ENEMYSPEED,upTankHeight,upTank,LCD_COLOR_BLUE,LCD_COLOR_BLACK);
-		enemy1dead = false;
-	}
-	if (enemy2dead){
-		// clears the now dead tank
-		lcd_draw_image(enemy2->xPos/ENEMYSPEED,upTankWidth,enemy2->yPos/ENEMYSPEED,upTankHeight,upTank,LCD_COLOR_BLACK,LCD_COLOR_BLACK);
-		//changes enemy2's positon to the top right corner
-		enemy2->xPos = 220*ENEMYSPEED;
-		enemy2->yPos = 20*ENEMYSPEED;
-		newDirection(enemy2, false, true, false);
-		//redraws enemy2
-		lcd_draw_image(enemy2->xPos/ENEMYSPEED,downTankWidth,enemy2->yPos/ENEMYSPEED,downTankHeight,downTank,LCD_COLOR_MAGENTA,LCD_COLOR_BLACK);
-		enemy2dead = false;
-	}
-	if (enemy3dead){
-		// clears the now dead tank
-		lcd_draw_image(enemy3->xPos/ENEMYSPEED,upTankWidth,enemy3->yPos/ENEMYSPEED,upTankHeight,upTank,LCD_COLOR_BLACK,LCD_COLOR_BLACK);
-		//changes enemy3's positon to the lower left corner
-		enemy3->xPos = 20*ENEMYSPEED;
-		enemy3->yPos = 300*ENEMYSPEED;
-		newDirection(enemy2, false, false, true);
-		//redraws enemy3
-		lcd_draw_image(enemy3->xPos/ENEMYSPEED,upTankWidth,enemy3->yPos/ENEMYSPEED,upTankHeight,upTank,LCD_COLOR_RED,LCD_COLOR_BLACK);
-		enemy3dead = false;
-	}
-}
-
-bool tankCollision(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool checkPlayer, bool checkEnemy1, bool checkEnemy2, bool checkEnemy3){
-	tank checker;
-	bool needNewDirection1 = false;
-	bool needNewDirection2 = false;
-	bool needNewDirection3 = false;
-	bool needNewDirection4 = false;
-	int downTankWidth1 = downTankWidth;
-	int downTankWidth2 = downTankWidth;
-	int downTankWidth3 = downTankWidth;
-	//sets tank checker's cordinates to appropriate tank
-	if(checkPlayer){
-		checker.xPos = player->xPos/ENEMYSPEED;
-		checker.yPos = player->yPos/ENEMYSPEED;
-	} else if(checkEnemy1) {
-		checker.xPos = enemy1->xPos/ENEMYSPEED;
-		checker.yPos = enemy1->yPos/ENEMYSPEED;
-	} else if(checkEnemy2) {
-		checker.xPos = enemy2->xPos/ENEMYSPEED;
-		checker.yPos = enemy2->yPos/ENEMYSPEED;
-	} else if(checkEnemy3) {
-		checker.xPos = enemy3->xPos/ENEMYSPEED;
-		checker.yPos = enemy3->yPos/ENEMYSPEED;
-	}
-	//goes through checking the given tank's coordinates against those of the player's tank
-	if (checker.xPos - upTankWidth/2 >= player->xPos/SPEED - upTankWidth/2 && checker.xPos - upTankWidth/2 <= player->xPos/SPEED + upTankWidth/2 && checkPlayer == false){
-		// left-most x coordinate of the given is within the x coordinate range of the player
-		if (checker.yPos- upTankWidth/2 >= player->yPos/SPEED - upTankWidth/2 && checker.yPos - upTankWidth/2 <= player->yPos/SPEED + upTankWidth/2){
-			//tanks are touching, need a new direction
-			needNewDirection4 = true;
-		} else if (checker.yPos+ upTankWidth/2 >= player->yPos/SPEED - upTankWidth/2 && checker.yPos + upTankWidth/2 <= player->yPos/SPEED + upTankWidth/2){
-			//tanks are touching, need a new direction
-			needNewDirection4 = true;
-		}
-	}
-	else if (checker.xPos + upTankWidth/2 >= player->xPos/SPEED - upTankWidth/2 && checker.xPos + upTankWidth/2 <= player->xPos/SPEED + upTankWidth/2 && checkPlayer == false){
-		// right-most x coordinate of the given tank is within the x coordinate range of player
-		if(checker.yPos- upTankWidth/2 >= player->yPos/SPEED - upTankWidth/2 && checker.yPos- upTankWidth/2 <= player->yPos/SPEED + upTankWidth/2){
-			//tanks are touching, need a new direction
-			needNewDirection4 = true;
-		}
-		// up-most y coordinate of given tank is within y coordinate range of player, up/right side of ship is touching given tank
-		else if (checker.yPos+ upTankWidth/2 >= player->yPos/SPEED - upTankWidth/2 && checker.yPos + upTankWidth/2 <= player->yPos/SPEED + upTankWidth/2){
-			// down-most y coordinate of player tank is within y coordinate range of enemy1, down/right side of ship is touching enemy1
-			//tanks are touching, need a new direction
-			needNewDirection4 = true;
-		}
-			
-	}
-	if (!checkEnemy1) {
-		//checks given tank against enemy1
-		if (checker.xPos - upTankWidth/2   >= enemy1->xPos/ENEMYSPEED - downTankWidth1/2 && checker.xPos - downTankWidth1/2 <= enemy1->xPos/ENEMYSPEED + upTankWidth/2 ){
-			// left-most x coordinate of the given tank is within the x coordinate range of the enemy1
-			if (checker.yPos- upTankWidth/2 >= enemy1->yPos/ENEMYSPEED - downTankWidth1/2 && checker.yPos - downTankWidth1/2 <= enemy1->yPos/ENEMYSPEED + upTankWidth/2  ){
-				//tanks are touching, need a new direction
-				needNewDirection1 = true;
-				//player hit an enemy tank
-				if (checkPlayer) {
-					needNewDirection4 = true;
-				}
-			}
-			else if (checker.yPos+ upTankWidth/2 >= enemy1->yPos/ENEMYSPEED - downTankWidth1/2 && checker.yPos + upTankWidth/2 <= enemy1->yPos/ENEMYSPEED + upTankWidth/2  ){
-				//tanks are touching, need a new direction
-				needNewDirection1 = true;
-				//player hit an enemy tank
-				if (checkPlayer) {
-					needNewDirection4 = true;
-				}
-			}
-		}
-		else if (checker.xPos + upTankWidth/2  >= enemy1->xPos/ENEMYSPEED - downTankWidth1/2 && checker.xPos + upTankWidth/2 <= enemy1->xPos/ENEMYSPEED + upTankWidth/2 ){
-			// right-most x coordinate of the given tank is within the x coordinate range of enemy1
-			if(checker.yPos- downTankWidth1/2 >= enemy1->yPos/ENEMYSPEED - downTankWidth1/2 && checker.yPos- downTankWidth1/2 <= enemy1->yPos/ENEMYSPEED + upTankWidth/2 ){
-				//tanks are touching, need a new direction
-				needNewDirection1 = true;
-				//player hit an enemy tank
-				if (checkPlayer) {
-					needNewDirection4 = true;
-				}
-			}
-				// up-most y coordinate of given tank is within y coordinate range of enemy1, up/right side of ship is touching given tank
-			else if (checker.yPos+ upTankWidth/2  >= enemy1->yPos/ENEMYSPEED - downTankWidth1/2 && checker.yPos + upTankWidth/2 <= enemy1->yPos/ENEMYSPEED + upTankWidth/2 ){
-				// down-most y coordinate of player tank is within y coordinate range of enemy1, down/right side of ship is touching enemy1
-				//tanks are touching, need a new direction
-				needNewDirection1 = true;
-				//player hit an enemy tank
-				if (checkPlayer) {
-					needNewDirection4 = true;
-				}
-			}	
-		}
-	}
-	
-	//
-	//
-	//
-	//checks to see if given tank touches enemy2 at any point
-	if (!checkEnemy2) {
-		if (checker.xPos - downTankWidth2/2 >= enemy2->xPos/ENEMYSPEED - downTankWidth2/2 && checker.xPos - downTankWidth2/2 <= enemy2->xPos/ENEMYSPEED + upTankWidth/2 ){
-			// left-most x coordinate of the tank is within the x coordinate range of the enemy2
-			if (checker.yPos- downTankWidth2/2 >= enemy2->yPos/ENEMYSPEED - downTankWidth2/2 && checker.yPos - downTankWidth2/2 <= enemy2->yPos/ENEMYSPEED + upTankWidth/2 ){
-				//tanks are touching, need a new direction
-				needNewDirection2 = true;
-				//player hit an enemy tank
-				if (checkPlayer) {
-					needNewDirection4 = true;
-				}
-			}
-			else if (checker.yPos+ upTankWidth/2 >= enemy2->yPos/ENEMYSPEED - downTankWidth2/2 && checker.yPos+ upTankWidth/2 <= enemy2->yPos/ENEMYSPEED + upTankWidth/2 ){
-				//tanks are touching, need a new direction
-				needNewDirection2 = true;
-				//player hit an enemy tank
-				if (checkPlayer) {
-					needNewDirection4 = true;
-				}
-			}
-		}
-		else if (checker.xPos + upTankWidth/2  >= enemy2->xPos/ENEMYSPEED - downTankWidth2/2 && checker.xPos + upTankWidth/2 <= enemy2->xPos/ENEMYSPEED + upTankWidth/2 ){
-			// right-most x coordinate of the given tank is within the x coordinate range of enemy2
-			if(checker.yPos - downTankWidth2/2 >= enemy2->yPos/ENEMYSPEED - downTankWidth2/2 && checker.yPos - downTankWidth2/2 <= enemy2->yPos/ENEMYSPEED + upTankWidth/2 ){
-				// up-most y coordinate of given tank is within y coordinate range of enemy2, up/right side of ship is touching enemy2
-				//tanks are touching, need a new direction
-				needNewDirection2 = true;
-				//player hit an enemy tank
-				if (checkPlayer) {
-					needNewDirection4 = true;
-				}
-			}
-			else if (checker.yPos + upTankWidth/2 >= enemy2->yPos/ENEMYSPEED - downTankWidth2/2 && checker.yPos + upTankWidth/2 <= enemy2->yPos/ENEMYSPEED + upTankWidth/2 ){
-				// down-most y coordinate of given tank is within y coordinate range of enemy1, down/right side of ship is touching enemy2
-				//tanks are touching, need a new direction
-				needNewDirection2 = true;
-				//player hit an enemy tank
-				if (checkPlayer) {
-					needNewDirection4 = true;
-				}
-			}
-		}
-	}
-	if (!checkEnemy3) {
-		if (checker.xPos - downTankWidth3/2  >= enemy3->xPos/ENEMYSPEED - downTankWidth3/2 && checker.xPos- downTankWidth3/2 <= enemy3->xPos/ENEMYSPEED + upTankWidth/2 ){
-			// left-most x coordinate of the given tank is within the x coordinate range of the enemy3
-			if (checker.yPos - downTankWidth3/2 >= enemy3->yPos/ENEMYSPEED - downTankWidth3/2 && checker.yPos - downTankWidth3/2 <= enemy3->yPos/ENEMYSPEED + upTankWidth/2 ){
-				//tanks are touching, need a new direction
-				needNewDirection3 = true;
-				//player hit an enemy tank
-				if (checkPlayer) {
-					needNewDirection4 = true;
-				}
-			}
-			else if (checker.yPos + upTankWidth/2  >= enemy3->yPos/ENEMYSPEED - downTankWidth3/2 && checker.yPos + upTankWidth/2 <= enemy3->yPos/ENEMYSPEED + upTankWidth/2 ){
-				//tanks are touching, need a new direction
-				needNewDirection3 = true;
-				//player hit an enemy tank
-				if (checkPlayer) {
-					needNewDirection4 = true;
-				}
-			}
-		}
-		else if (checker.xPos + upTankWidth/2  >= enemy3->xPos/ENEMYSPEED - downTankWidth3/2 && checker.xPos + upTankWidth/2 <= enemy3->xPos/ENEMYSPEED + upTankWidth/2 ){
-			// right-most x coordinate of the given tank is within the x coordinate range of enemy3
-			if(checker.yPos - downTankWidth3/2 >= enemy3->yPos/ENEMYSPEED - downTankWidth3/2 && checker.yPos- downTankWidth3/2 <= enemy3->yPos/ENEMYSPEED + upTankWidth/2 ){
-				// up-most y coordinate of given tank is within y coordinate range of enemy3, up/right side of ship is touching enemy3
-				//tanks are touching, need a new direction
-				needNewDirection3 = true;
-				//player hit an enemy tank
-				if (checkPlayer) {
-					needNewDirection4 = true;
-				}
-			}	
-			else if (checker.yPos + upTankWidth/2 >= enemy3->yPos/ENEMYSPEED - downTankWidth3/2 && checker.yPos + upTankWidth/2 <= enemy3->yPos/ENEMYSPEED + upTankWidth/2 ){
-				// down-most y coordinate of player tank is within y coordinate range of given tank, down/right side of ship is touching enemy3
-				//tanks are touching, need a new direction
-				needNewDirection3 = true;
-				//player hit an enemy tank
-				if (checkPlayer) {
-					needNewDirection4 = true;
-				}
-			}
-		}
-	}
-
-	
-	
-	//completely changes enemies direction to the opposite direction
-	if (needNewDirection1 == true) {
-		enemy1dead = true;
-		checkEnemydead(enemy1, enemy2, enemy3);
-	}
-	if (needNewDirection2 == true) {
-		enemy2dead = true;
-		checkEnemydead(enemy1, enemy2, enemy3);
-	}
-	//switches enemy 3's direction to the opposite direction
-	if (needNewDirection3 == true) {
-		enemy3dead = true;
-		checkEnemydead(enemy1, enemy2, enemy3);
-	}
-	if (needNewDirection1 | needNewDirection2 | needNewDirection3) {
-		return true;
-	}
-	if (needNewDirection4) {
-		DisableInterrupts();
-		//put_string("Ran into enemy tank.\n\r");
-		game_over = true;
-		paused = true;
-		//gameOver(true);
-		EnableInterrupts();
-		return true;
-	}
-	return false;
-}
-
-
 
 // helps give the enemy tanks random movement
 uint16_t getTankMovement(tank *enemy) {
@@ -425,16 +355,55 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 	//checks for a collision between enemy1 and any other tank
 	if (tankCollision(player, enemy1, enemy2, enemy3, false, true, false, false)){
 		//enemy1 changes into the opposite direction
-		enemy1dead = true;
-		checkEnemydead(enemy1, enemy2, enemy3);
+		switch(enemy1->direction){
+						enemy1->moves = getTankMovement(enemy1);
+					case right:
+						enemy1->direction = left;
+						break;
+					case left:
+						enemy1->direction = right;
+						break;
+					case down:
+						enemy1->direction = up;	
+						break;
+					case up:
+						enemy1->direction = down;
+						break;	
+		}
 	}
 	if (tankCollision(player, enemy1, enemy2, enemy3, false, false, true, false)) {
-		enemy2dead = true;
-		checkEnemydead(enemy1, enemy2, enemy3);
+		switch(enemy2->direction){
+						enemy2->moves = getTankMovement(enemy2);
+					case right:
+						enemy2->direction = left;
+						break;
+					case left:
+						enemy2->direction = right;
+						break;
+					case down:
+						enemy2->direction = up;
+						break;
+					case up:
+						enemy2->direction = down;
+						break;	
+		}
 	}
 	if (tankCollision(player, enemy1, enemy2, enemy3, false, false, false, true)){
-		enemy3dead = true;
-		checkEnemydead(enemy1, enemy2, enemy3);
+		switch(enemy3->direction){
+						enemy3->moves = getTankMovement(enemy3);
+					case right:
+						enemy3->direction = left;
+						break;
+					case left:
+						enemy3->direction = right;	
+						break;
+					case down:
+						enemy3->direction = up;	
+						break;
+					case up:
+						enemy3->direction = down;
+						break;	
+		}
 	}
 	
 	// checks if enemy tanks still have moves remaining, changes direction if it does not
@@ -455,7 +424,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 		//checks for direction of enemy1
 		if (enemy1->direction == left) {
 			//checks for left edge of screen and barrier collison
-			if(((enemy1->xPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy1->xPos -1,enemy1->yPos, true))){
+			if(((enemy1->xPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy1->xPos -1,enemy1->yPos))){
 					//moves enemy1 left one pixel
 				enemy1->xPos -= 1;
 				enemy1->moves--; // decrements moves remaining
@@ -466,7 +435,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 		}
 		if (enemy1->direction == right) {
 			//checks for right edge of screen and barrier collison
-			if(((enemy1->xPos/ENEMYSPEED + (upTankWidth/2))<COLS) && (!checkCollision(enemy1->xPos+1,enemy1->yPos, true))){
+			if(((enemy1->xPos/ENEMYSPEED + (upTankWidth/2))<COLS) && (!checkCollision(enemy1->xPos+1,enemy1->yPos))){
 					//moves enemy1 right one pixel
 				enemy1->xPos += 1;
 				enemy1->moves--; // decrements moves remaining
@@ -477,7 +446,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 		}
 		if (enemy1->direction == up) {
 			//checks for left edge of screen and barrier collison
-			if(((enemy1->yPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy1->xPos,enemy1->yPos-1, true))){
+			if(((enemy1->yPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy1->xPos,enemy1->yPos-1))){
 					//moves enemy1 up one pixel
 				enemy1->yPos -= 1;
 				enemy1->moves--; // decrements moves remaining
@@ -488,7 +457,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 		}
 		if (enemy1->direction == down) {
 			//checks for left edge of screen and barrier collison
-			if(((enemy1->yPos/ENEMYSPEED + (upTankWidth/2))<ROWS) && (!checkCollision(enemy1->xPos,enemy1->yPos+1, true))){
+			if(((enemy1->yPos/ENEMYSPEED + (upTankWidth/2))<ROWS) && (!checkCollision(enemy1->xPos,enemy1->yPos+1))){
 					//moves enemy1 down one pixel
 				enemy1->yPos += 1;
 				enemy1->moves--; // decrements moves remaining
@@ -503,7 +472,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 	//checks for direction of enemy2
 	if (enemy2->direction == left) {
 		//checks for left edge of screen and barrier collison
-		if(((enemy2->xPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy2->xPos -1,enemy2->yPos, true))){
+		if(((enemy2->xPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy2->xPos -1,enemy2->yPos))){
 				//moves enemy1 left one pixel
 			enemy2->xPos -= 1;
 			enemy2->moves--; // decrements moves remaining
@@ -514,7 +483,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 	}
 	if (enemy2->direction == right) {
 		//checks for right edge of screen and barrier collison
-		if(((enemy2->xPos/ENEMYSPEED + (upTankWidth/2))<COLS) && (!checkCollision(enemy2->xPos+1,enemy2->yPos, true))){
+		if(((enemy2->xPos/ENEMYSPEED + (upTankWidth/2))<COLS) && (!checkCollision(enemy2->xPos+1,enemy2->yPos))){
 				//moves enemy1 right one pixel
 			enemy2->xPos += 1;
 			enemy2->moves--; // decrements moves remaining
@@ -525,7 +494,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 	}
 	if (enemy2->direction == up) {
 		//checks for left edge of screen and barrier collison
-		if(((enemy2->yPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy2->xPos,enemy2->yPos-1, true))){
+		if(((enemy2->yPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy2->xPos,enemy2->yPos-1))){
 				//moves enemy1 up one pixel
 			enemy2->yPos -= 1;
 			enemy2->moves--; // decrements moves remaining
@@ -536,7 +505,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 	}
 	if (enemy2->direction == down) {
 		//checks for left edge of screen and barrier collison
-		if(((enemy2->yPos/ENEMYSPEED + (upTankWidth/2))<ROWS) && (!checkCollision(enemy2->xPos,enemy2->yPos+1, true))){
+		if(((enemy2->yPos/ENEMYSPEED + (upTankWidth/2))<ROWS) && (!checkCollision(enemy2->xPos,enemy2->yPos+1))){
 				//moves enemy1 down one pixel
 			enemy2->yPos += 1;
 			enemy2->moves--; // decrements moves remaining
@@ -550,7 +519,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 	//checks for direction of enemy3
 	if (enemy3->direction == left) {
 		//checks for left edge of screen and barrier collison
-		if(((enemy3->xPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy3->xPos -1,enemy3->yPos, true))){
+		if(((enemy3->xPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy3->xPos -1,enemy3->yPos))){
 				//moves enemy1 left one pixel
 			enemy3->xPos -= 1;
 			enemy3->moves--; // decrements moves remaining
@@ -561,7 +530,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 	}
 	if (enemy3->direction == right) {
 		//checks for right edge of screen and barrier collison
-		if(((enemy3->xPos/ENEMYSPEED + (upTankWidth/2))<COLS) && (!checkCollision(enemy3->xPos+1,enemy3->yPos, true))){
+		if(((enemy3->xPos/ENEMYSPEED + (upTankWidth/2))<COLS) && (!checkCollision(enemy3->xPos+1,enemy3->yPos))){
 				//moves enemy1 right one pixel
 			enemy3->xPos += 1;
 			enemy3->moves--;
@@ -572,7 +541,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 	}
 	if (enemy3->direction == up) {
 		//checks for left edge of screen and barrier collison
-		if(((enemy3->yPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy3->xPos,enemy3->yPos-1, true))){
+		if(((enemy3->yPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy3->xPos,enemy3->yPos-1))){
 				//moves enemy1 up one pixel
 			enemy3->yPos -= 1;
 			enemy3->moves--; // decrements moves remaining
@@ -583,7 +552,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 	}
 	if (enemy3->direction == down) {
 		//checks for left edge of screen and barrier collison
-		if(((enemy3->yPos/ENEMYSPEED + (upTankWidth/2))<ROWS) && (!checkCollision(enemy3->xPos,enemy3->yPos+1, true))){
+		if(((enemy3->yPos/ENEMYSPEED + (upTankWidth/2))<ROWS) && (!checkCollision(enemy3->xPos,enemy3->yPos+1))){
 				//moves enemy1 down one pixel
 			enemy3->yPos += 1;
 			enemy3->moves--; // decrements moves remaining
@@ -599,58 +568,50 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 }
 
 // PlayerMovement
-void playerMove(tank *player,bool *alert_move, volatile PS2_DIR_t TANK_DIRECTION, tank *enemy1, tank *enemy2, tank *enemy3){
-	if (!tankCollision(player, enemy2, enemy2, enemy3, true, false, false, false)){
-		if (TANK_DIRECTION == PS2_DIR_LEFT){
-			//checks for left edge of screen
-				if((player->xPos/SPEED - (upTankWidth/2))>0){
-					//checks for collision of barrier
-					if(!checkCollision(player->xPos -1,player->yPos, false)){
-						player->direction = left;
-						player->xPos -= 1;
-						*alert_move = true;
-					} 
+void playerMove(tank *player,bool *alert_move, volatile PS2_DIR_t TANK_DIRECTION){
+	if (TANK_DIRECTION == PS2_DIR_LEFT){
+		//checks for left edge of screen
+			if((player->xPos/SPEED - (upTankWidth/2))>0){
+				//checks for collision of barrier
+				if(!checkCollision(player->xPos -1,player->yPos)){
+					player->direction = left;
+					player->xPos -= 1;
+					*alert_move = true;
 				}
-			}else if(TANK_DIRECTION == PS2_DIR_RIGHT){
-				//checks for right edge of screen
-				if((player->xPos/SPEED + (upTankWidth/2))<COLS){
-					//checks for collision of barrier
-					if(!checkCollision(player->xPos+1,player->yPos, false)){
-						player->direction = right;
-						player->xPos += 1;
-						*alert_move = true;
-					}
+				
+			}
+		}else if(TANK_DIRECTION == PS2_DIR_RIGHT){
+			//checks for right edge of screen
+			if((player->xPos/SPEED + (upTankWidth/2))<COLS){
+				//checks for collision of barrier
+				if(!checkCollision(player->xPos+1,player->yPos)){
+					player->direction = right;
+					player->xPos += 1;
+					*alert_move = true;
 				}
 			}
-			
-			if (TANK_DIRECTION == PS2_DIR_UP){
-				//checks for top edge of screen
-				if((player->yPos/SPEED - (upTankWidth/2))>0){
-					//checks for collision of barrier
-					if(!checkCollision(player->xPos,player->yPos-1, false)){
-						player->direction = up;
-						player->yPos -= 1;
-						*alert_move = true;
-					}
-				}
-			}else if(TANK_DIRECTION == PS2_DIR_DOWN){
-				//checks for bottom of screen
-				if((player->yPos/SPEED + (upTankWidth/2))<ROWS){
-					//checks for collision of barrier
-					if(!checkCollision(player->xPos,player->yPos+1, false)){
-						player->direction = down;
-						player->yPos += 1;
-						*alert_move = true;
-					}
+		}
+		
+		if (TANK_DIRECTION == PS2_DIR_UP){
+			//checks for top edge of screen
+			if((player->yPos/SPEED - (upTankWidth/2))>0){
+				//checks for collision of barrier
+				if(!checkCollision(player->xPos,player->yPos-1)){
+					player->direction = up;
+					player->yPos -= 1;
+					*alert_move = true;
 				}
 			}
-		} else if (tankCollision(player, enemy2, enemy2, enemy3, true, false, false, false)){
-			game_over = true;
-			paused = true;
-			DisableInterrupts();
-			//put_string("Ran into an enemy tank.\n\r");
-			//gameOver(game_over);
-			EnableInterrupts();
+		}else if(TANK_DIRECTION == PS2_DIR_DOWN){
+			//checks for bottom of screen
+			if((player->yPos/SPEED + (upTankWidth/2))<ROWS){
+				//checks for collision of barrier
+				if(!checkCollision(player->xPos,player->yPos+1)){
+					player->direction = down;
+					player->yPos += 1;
+					*alert_move = true;
+				}
+			}
 		}
 	
 }
@@ -663,7 +624,7 @@ void initBarriers(){
 	barrier block3 ={100,140,40,40,false};
 	barrier block4 = {0,120,20,70,false};
 	barrier block5 = {220,120,20,70,false};
-	barrier block6 = {50, 290, 140, 30, false};
+	barrier block6 = {50, 250, 140, 30, false};
 	
 	barriers[0] = block; 
 	barriers[1] = block2;
@@ -723,28 +684,59 @@ void updateBullets(tank *enemy1, tank *enemy2, tank *enemy3){
 					bullet_array[i].active = false;
 				}
 				
+				//check if hit enemy
+				
 				
 				
 		}
 	}
 }
 
-
+//resets the enemies postions so that they can be redrawn
+void checkEnemydead(tank *enemy1, tank *enemy2, tank *enemy3){
+	if (enemy1dead){
+		// clears the now dead tank
+		lcd_draw_image(enemy1->xPos/ENEMYSPEED,upTankWidth,enemy1->yPos/ENEMYSPEED,upTankHeight,upTank,LCD_COLOR_BLACK,LCD_COLOR_BLACK);
+		//changes enemy1's positon to the lower right corner
+		enemy1->xPos = 220*ENEMYSPEED;
+		enemy1->yPos = 300*ENEMYSPEED;
+		newDirection(enemy1, true, false, false);
+		//redraws the enemy1
+		lcd_draw_image(enemy1->xPos/ENEMYSPEED,upTankWidth,enemy1->yPos/ENEMYSPEED,upTankHeight,upTank,LCD_COLOR_BLUE,LCD_COLOR_BLACK);
+		enemy1dead = false;
+	}
+	if (enemy2dead){
+		// clears the now dead tank
+		lcd_draw_image(enemy2->xPos/ENEMYSPEED,upTankWidth,enemy2->yPos/ENEMYSPEED,upTankHeight,upTank,LCD_COLOR_BLACK,LCD_COLOR_BLACK);
+		//changes enemy2's positon to the top right corner
+		enemy2->xPos = 220*ENEMYSPEED;
+		enemy2->yPos = 20*ENEMYSPEED;
+		newDirection(enemy2, false, true, false);
+		//redraws enemy2
+		lcd_draw_image(enemy2->xPos/ENEMYSPEED,downTankWidth,enemy2->yPos/ENEMYSPEED,downTankHeight,downTank,LCD_COLOR_BLUE,LCD_COLOR_BLACK);
+		enemy2dead = false;
+	}
+	if (enemy3dead){
+		// clears the now dead tank
+		lcd_draw_image(enemy3->xPos/ENEMYSPEED,upTankWidth,enemy3->yPos/ENEMYSPEED,upTankHeight,upTank,LCD_COLOR_BLACK,LCD_COLOR_BLACK);
+		//changes enemy3's positon to the lower left corner
+		enemy3->xPos = 20*ENEMYSPEED;
+		enemy3->yPos = 300*ENEMYSPEED;
+		newDirection(enemy2, false, false, true);
+		//redraws enemy3
+		lcd_draw_image(enemy3->xPos/ENEMYSPEED,upTankWidth,enemy3->yPos/ENEMYSPEED,upTankHeight,upTank,LCD_COLOR_BLUE,LCD_COLOR_BLACK);
+		enemy3dead = false;
+	}
+}
 
 // shoots bullets out of tanks
-void shoot(tank *t, bullet *b, bool playerShoot) {
+void shoot(tank *t, bullet *b) {
 	// only shoots if bullet is inactive
 	if(!b->active) {
-		
 		// sets up the bullet
 		b->direction = t->direction;
-		if (playerShoot) {
-			b->xPos = t->xPos/SPEED;
-			b->yPos = t->yPos/SPEED;
-			} else { 
-				b->xPos = t->xPos/ENEMYSPEED;
-				b->yPos = t->yPos/ENEMYSPEED;
-			}
+		b->xPos = t->xPos;
+		b->yPos = t->yPos;
 		b->active = true;
 		
 		// bullet is drawn in a different spot depending on where the tank is facing
@@ -803,15 +795,12 @@ void moveBullet(bullet *b) {
 	if(((b->xPos-2>=player.xPos-16)&&(b->xPos-2<=player.xPos+16)) || ((b->xPos+2<=player.xPos-16)&&(b->xPos+2>=player.xPos+16))) {
 		if(((b->yPos-2>=player.yPos-16)&&(b->yPos-2<=player.yPos+16)) || ((b->yPos+2<=player.yPos-16)&&(b->yPos+2>=player.yPos+16))) {
 			paused = true;
-			DisableInterrupts();
 			game_over = true;
-			//gameOver(true);
-			EnableInterrupts();
 		}
 	}
 	// checks if a bullet has hit an enemy, which kills the enemy and calls checkEnemyDead to respawn him
-	if(((b->xPos-2>=enemy1.xPos/ENEMYSPEED-16)&&(b->xPos-2<=enemy1.xPos/ENEMYSPEED+16)) || ((b->xPos+2<=enemy1.xPos/ENEMYSPEED-16)&&(b->xPos+2>=enemy1.xPos/ENEMYSPEED+16))) {
-		if(((b->yPos-2>=enemy1.yPos/ENEMYSPEED-16)&&(b->yPos-2<=enemy1.yPos/ENEMYSPEED+16)) || ((b->yPos+2<=enemy1.yPos/ENEMYSPEED-16)&&(b->yPos+2>=enemy1.yPos/ENEMYSPEED+16))) {
+	if(((b->xPos-2>=enemy1.xPos-16)&&(b->xPos-2<=enemy1.xPos+16)) || ((b->xPos+2<=enemy1.xPos-16)&&(b->xPos+2>=enemy1.xPos+16))) {
+		if(((b->yPos-2>=enemy1.yPos-16)&&(b->yPos-2<=enemy1.yPos+16)) || ((b->yPos+2<=enemy1.yPos-16)&&(b->yPos+2>=enemy1.yPos+16))) {
 			enemy1dead = true;
 			checkEnemydead(&enemy1, &enemy2, &enemy3);
 			b->active = false; // deactivates bullet
@@ -823,23 +812,21 @@ void moveBullet(bullet *b) {
 		}
 	}
 	// checks if a bullet has hit an enemy, which kills the enemy and calls checkEnemyDead to respawn him
-	if(((b->xPos-2>=enemy2.xPos/ENEMYSPEED-16)&&(b->xPos-2<=enemy2.xPos/ENEMYSPEED+16)) || ((b->xPos+2<=enemy2.xPos/ENEMYSPEED-16)&&(b->xPos+2>=enemy2.xPos/ENEMYSPEED+16))) {
-		if(((b->yPos-2>=enemy2.yPos/ENEMYSPEED-16)&&(b->yPos-2<=enemy2.yPos/ENEMYSPEED+16)) || ((b->yPos+2<=enemy2.yPos/ENEMYSPEED-16)&&(b->yPos+2>=enemy2.yPos/ENEMYSPEED+16))) {
+	if(((b->xPos-2>=enemy2.xPos-16)&&(b->xPos-2<=enemy2.xPos+16)) || ((b->xPos+2<=enemy2.xPos-16)&&(b->xPos+2>=enemy2.xPos+16))) {
+		if(((b->yPos-2>=enemy2.yPos-16)&&(b->yPos-2<=enemy2.yPos+16)) || ((b->yPos+2<=enemy2.yPos-16)&&(b->yPos+2>=enemy2.yPos+16))) {
 			enemy2dead = true;
 			checkEnemydead(&enemy1, &enemy2, &enemy3);
 			b->active = false; // deactivates bullet
 			// updates the score and prints it to serial debugger
 			if(b == &playerShot) {
 				score++;
-				DisableInterrupts();
 				printf("%d\n\r",score);
-				EnableInterrupts();
 			}
 		}
 	}
 	// checks if a bullet has hit an enemy, which kills the enemy and calls checkEnemyDead to respawn him
-	if(((b->xPos-2>=enemy3.xPos/ENEMYSPEED-16)&&(b->xPos-2<=enemy3.xPos/ENEMYSPEED+16)) || ((b->xPos+2<=enemy3.xPos/ENEMYSPEED-16)&&(b->xPos+2>=enemy3.xPos/ENEMYSPEED+16))) {
-		if(((b->yPos-2>=enemy3.yPos/ENEMYSPEED-16)&&(b->yPos-2<=enemy3.yPos/ENEMYSPEED+16)) || ((b->yPos+2<=enemy3.yPos/ENEMYSPEED-16)&&(b->yPos+2>=enemy3.yPos/ENEMYSPEED+16))) {
+	if(((b->xPos-2>=enemy3.xPos-16)&&(b->xPos-2<=enemy3.xPos+16)) || ((b->xPos+2<=enemy3.xPos-16)&&(b->xPos+2>=enemy3.xPos+16))) {
+		if(((b->yPos-2>=enemy3.yPos-16)&&(b->yPos-2<=enemy3.yPos+16)) || ((b->yPos+2<=enemy3.yPos-16)&&(b->yPos+2>=enemy3.yPos+16))) {
 			enemy3dead = true;
 			checkEnemydead(&enemy1, &enemy2, &enemy3);
 			b->active = false; // deactivates bullet
@@ -917,7 +904,7 @@ int main(void)
 		initBarriers();
 		drawBarriers();
 	
-	while(!gameOver(game_over)){
+	while(!game_over){
 		
 		while(!paused) {
 			//draws the players tank according to direction
@@ -993,16 +980,12 @@ int main(void)
 			//uses interupts to move the player
 			if(TIMER2_ALERT){
 				//check x,y ps2 positions
-				enemy1Move(&player, &enemy1, &enemy2, &enemy3, &alert_enemy1, &alert_enemy2, &alert_enemy3);
-				playerMove(&player, &alert_move, PS2_DIR, &enemy1, &enemy2, &enemy3);
+				playerMove(&player, &alert_move, PS2_DIR);
 				TIMER2_ALERT = false;
 			}
 			
 			if(TIMER3_ALERT){
-				printf("\n\rFinal Score:");
-				printf("%d\n\r",score);
-				game_over = true;
-				gameOver(game_over);
+				enemy1Move(&player, &enemy1, &enemy2, &enemy3, &alert_enemy1, &alert_enemy2, &alert_enemy3);
 				TIMER3_ALERT = false;
 			}
 			//barriers
@@ -1020,25 +1003,25 @@ int main(void)
 				moveBullet(&enemy3Shot);
 			
 			// forces enemy tanks to 'reload' before they can shoot again
-			if(!enemy1Shot.active && enemy1Shot.waitTime != 300) {
+			if(!enemy1Shot.active && enemy1Shot.waitTime != 100) {
 				enemy1Shot.waitTime++;
 			}
 			else {
-				shoot(&enemy1, &enemy1Shot, false);
+				shoot(&enemy1, &enemy1Shot);
 				enemy1Shot.waitTime = 0;
 			}
-			if(!enemy2Shot.active && enemy2Shot.waitTime != 300) {
+			if(!enemy2Shot.active && enemy2Shot.waitTime != 100) {
 				enemy2Shot.waitTime++;
 			}
 			else {
-				shoot(&enemy2, &enemy2Shot, false);
+				shoot(&enemy2, &enemy2Shot);
 				enemy2Shot.waitTime = 0;
 			}
-			if(!enemy3Shot.active && enemy3Shot.waitTime != 300) {
+			if(!enemy3Shot.active && enemy3Shot.waitTime != 100) {
 				enemy3Shot.waitTime++;
 			}
 			else {
-				shoot(&enemy3, &enemy3Shot, false);
+				shoot(&enemy3, &enemy3Shot);
 				enemy3Shot.waitTime = 0;
 			}
 			
@@ -1058,12 +1041,12 @@ int main(void)
 				//	}
 					
 				//}
-				shoot(&player, &playerShot, true);
+				shoot(&player, &playerShot);
 			}
 				
 		}
-		
 	}
+	
 	
 	
 }  
@@ -1076,8 +1059,6 @@ int main(void)
 //*****************************************************************************
 void init_hardware(void)
 {
-	//for 30 seconds
-	int setGameEnd = 50000000*30;
 	lp_io_init();
   lcd_config_gpio();
   lcd_config_screen();
@@ -1089,6 +1070,8 @@ void init_hardware(void)
   //
 	config_timer1();
   gp_timer_config_32(TIMER2_BASE,TIMER_TAMR_TAMR_PERIOD, 1000000, false, true);
-  gp_timer_config_32(TIMER3_BASE,TIMER_TAMR_TAMR_PERIOD, setGameEnd, false, true);
+  gp_timer_config_32(TIMER3_BASE,TIMER_TAMR_TAMR_PERIOD, 500000, false, true);
   gp_timer_config_32(TIMER4_BASE,TIMER_TAMR_TAMR_PERIOD, 50000, false, true);
 }
+
+
