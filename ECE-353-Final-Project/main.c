@@ -1061,12 +1061,10 @@ int main(void)
 //*****************************************************************************
 void init_hardware(void)
 {
-<<<<<<< HEAD
+
 
 	//for 30 seconds
-	int setGameEnd = 50000000*30;
-=======
->>>>>>> fc4702e58a592a3e4fea09a1832629826fe6bb32
+	//int setGameEnd = 50000000*30;
 	lp_io_init();
   lcd_config_gpio();
   lcd_config_screen();
