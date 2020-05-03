@@ -797,24 +797,24 @@ void updateBullets(tank *enemy1, tank *enemy2, tank *enemy3){
 				//moves bullet in direction, and draws it in that direction.
 				switch(bullet_array[i].direction){
 					case up: 
-							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 2,bullet_array[i].yPos + 6,LCD_COLOR_BLACK);
+							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 2,bullet_array[i].yPos + 2,LCD_COLOR_BLACK);
 							bullet_array[i].yPos--;
-							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 2,bullet_array[i].yPos + 6,LCD_COLOR_WHITE);
+							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 2,bullet_array[i].yPos + 2,LCD_COLOR_WHITE);
 							break;
 					case down:
-							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 2,bullet_array[i].yPos + 6,LCD_COLOR_BLACK);
+							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 2,bullet_array[i].yPos + 2,LCD_COLOR_BLACK);
 							bullet_array[i].yPos++;
-							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 2,bullet_array[i].yPos + 6,LCD_COLOR_WHITE);
+							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 2,bullet_array[i].yPos + 2,LCD_COLOR_WHITE);
 							break;
 					case right:
-							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 6,bullet_array[i].yPos + 2,LCD_COLOR_BLACK);
+							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 2,bullet_array[i].yPos + 2,LCD_COLOR_BLACK);
 							bullet_array[i].xPos++;
-							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 6,bullet_array[i].yPos + 2,LCD_COLOR_WHITE);
+							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 2,bullet_array[i].yPos + 2,LCD_COLOR_WHITE);
 							break;
 					case left:
-							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 6,bullet_array[i].yPos + 2,LCD_COLOR_BLACK);
+							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 2,bullet_array[i].yPos + 2,LCD_COLOR_BLACK);
 							bullet_array[i].xPos--;
-							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 6,bullet_array[i].yPos + 2,LCD_COLOR_WHITE);
+							lcd_draw_line(bullet_array[i].xPos,bullet_array[i].yPos,bullet_array[i].xPos + 2,bullet_array[i].yPos + 2,LCD_COLOR_WHITE);
 							break;
 				}
 				
@@ -827,14 +827,19 @@ void updateBullets(tank *enemy1, tank *enemy2, tank *enemy3){
 				//check if hit enemy
 				if (bullet_array[0].active) {
 					checkEnemyhit(enemy1, enemy2, enemy3, 0);
+				} else if (!bullet_array[0].active) {
+					lcd_draw_line(bullet_array[0].xPos,bullet_array[0].yPos,bullet_array[0].xPos + 2,bullet_array[0].yPos + 2,LCD_COLOR_BLACK);
 				}
 				//check if hit enemy
 				if (bullet_array[1].active) {
 					checkEnemyhit(enemy1, enemy2, enemy3, 1);
+				} else if (!bullet_array[1].active) {
+					lcd_draw_line(bullet_array[1].xPos,bullet_array[1].yPos,bullet_array[1].xPos + 2,bullet_array[1].yPos + 2,LCD_COLOR_BLACK);
 				}
 				//check if hit enemy
 				if (bullet_array[2].active) {
 					checkEnemyhit(enemy1, enemy2, enemy3, 2);
+					lcd_draw_line(bullet_array[2].xPos,bullet_array[2].yPos,bullet_array[1].xPos + 2,bullet_array[2].yPos + 2,LCD_COLOR_BLACK);
 				}
 				//will redraw the enemy if dead
 				checkEnemydead(enemy1, enemy2, enemy3);
@@ -920,16 +925,16 @@ int main(void)
 		if(alert_enemy2){
 			switch(enemy2.direction){
 				case up:
-					lcd_draw_image(enemy2.xPos/ENEMYSPEED,upTankWidth,enemy2.yPos/ENEMYSPEED,upTankHeight,upTank,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
+					lcd_draw_image(enemy2.xPos/ENEMYSPEED,upTankWidth,enemy2.yPos/ENEMYSPEED,upTankHeight,upTank,LCD_COLOR_CYAN,LCD_COLOR_BLACK);
 					break;
 				case down:
-					lcd_draw_image(enemy2.xPos/ENEMYSPEED,downTankWidth,enemy2.yPos/ENEMYSPEED,downTankHeight,downTank,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
+					lcd_draw_image(enemy2.xPos/ENEMYSPEED,downTankWidth,enemy2.yPos/ENEMYSPEED,downTankHeight,downTank,LCD_COLOR_CYAN,LCD_COLOR_BLACK);
 					break;
 				case left:
-					lcd_draw_image(enemy2.xPos/ENEMYSPEED,leftTankWidth,enemy2.yPos/ENEMYSPEED,leftTankHeight,leftTank,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
+					lcd_draw_image(enemy2.xPos/ENEMYSPEED,leftTankWidth,enemy2.yPos/ENEMYSPEED,leftTankHeight,leftTank,LCD_COLOR_CYAN,LCD_COLOR_BLACK);
 					break;
 				case right:
-					lcd_draw_image(enemy2.xPos/ENEMYSPEED,rightTankWidth,enemy2.yPos/ENEMYSPEED,rightTankHeight,rightTank,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
+					lcd_draw_image(enemy2.xPos/ENEMYSPEED,rightTankWidth,enemy2.yPos/ENEMYSPEED,rightTankHeight,rightTank,LCD_COLOR_CYAN,LCD_COLOR_BLACK);
 					break;
 			}
 				
