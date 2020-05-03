@@ -8,6 +8,7 @@ barrier barriers[6];
 int numBarriers = 6;
 int SPEED = 1; //lower number is faster
 int ENEMYSPEED = 1;
+
 //direction of the player's tank
 volatile PS2_DIR_t TANK_DIRECTION = PS2_DIR_CENTER;
 
@@ -632,6 +633,161 @@ void drawBarriers(){
 			lcd_draw_box(barriers[i].xPos,barriers[i].width,barriers[i].yPos,barriers[i].height,LCD_COLOR_RED,LCD_COLOR_BLACK,2);
 	}	
 }
+//resets the enemies postions so that they can be redrawn
+void checkEnemydead(tank *enemy1, tank *enemy2, tank *enemy3){
+	if (enemy1dead){
+		//clears tank image off the screen if shot
+		lcd_draw_image(enemy1->xPos/ENEMYSPEED,upTankWidth,enemy1->yPos/ENEMYSPEED,upTankHeight,upTank,LCD_COLOR_BLACK,LCD_COLOR_BLACK);
+		//changes enemy1's positon to the lower right corner
+		enemy1->xPos = 220*ENEMYSPEED;
+		enemy1->yPos = 300*ENEMYSPEED;
+		enemy1->direction = up;
+		//redraws the enemy1
+		lcd_draw_image(enemy1->xPos/ENEMYSPEED,upTankWidth,enemy1->yPos/ENEMYSPEED,upTankHeight,upTank,LCD_COLOR_BLUE,LCD_COLOR_BLACK);
+		enemy1dead = false;
+	}
+	if (enemy2dead){
+		//clears the enemies image off the screen if shot
+		lcd_draw_image(enemy2->xPos/ENEMYSPEED,downTankWidth,enemy2->yPos/ENEMYSPEED,downTankHeight,downTank,LCD_COLOR_BLACK,LCD_COLOR_BLACK);
+		//changes enemy2's positon to the top right corner
+		enemy2->xPos = 220*ENEMYSPEED;
+		enemy2->yPos = 20*ENEMYSPEED;
+		enemy2->direction = down;
+		//redraws enemy2
+		lcd_draw_image(enemy2->xPos/ENEMYSPEED,downTankWidth,enemy2->yPos/ENEMYSPEED,downTankHeight,downTank,LCD_COLOR_BLUE,LCD_COLOR_BLACK);
+		enemy2dead = false;
+	}
+	if (enemy3dead){
+		lcd_draw_image(enemy3->xPos/ENEMYSPEED,upTankWidth,enemy3->yPos/ENEMYSPEED,upTankHeight,upTank,LCD_COLOR_BLACK,LCD_COLOR_BLACK);
+		//changes enemy3's positon to the lower left corner
+		enemy3->xPos = 20*ENEMYSPEED;
+		enemy3->yPos = 300*ENEMYSPEED;
+		enemy3->direction = up;
+		//redraws enemy3
+		lcd_draw_image(enemy3->xPos/ENEMYSPEED,upTankWidth,enemy3->yPos/ENEMYSPEED,upTankHeight,upTank,LCD_COLOR_BLUE,LCD_COLOR_BLACK);
+		enemy3dead = false;
+	}
+}
+
+void checkEnemyhit (tank *enemy1, tank *enemy2, tank *enemy3, int bulletUsed) {
+	int i, j, k, l;
+	int checkXpos1;
+	int checkYpos1;
+	int checkXpos2;
+	int checkYpos2;
+	bool enemy1Hit;
+	bool enemy2Hit;
+	bool enemy3Hit;
+	int checkXpos3;
+	int checkYpos3;
+	
+	//gets the coordinates of each of the enemy tanks
+	checkXpos1 = enemy1->xPos/SPEED;
+	checkYpos1 = enemy1->yPos/SPEED;
+	checkXpos2 = enemy2->xPos/SPEED;
+	checkYpos2 = enemy2->yPos/SPEED;
+	checkXpos3 = enemy3->xPos/SPEED;
+	checkYpos3 = enemy3->yPos/SPEED;
+	
+	enemy1Hit = false;
+	enemy2Hit = false;
+	enemy3Hit = false;
+	i = 1; 
+	//loops to check if bullet hit enemy1
+	while (i > 0 && !enemy1Hit) {
+			j = upTankWidth;
+			k = upTankHeight;
+		//loop to check each x-position of the enemy1 tank against the position of the bullet
+			while( j> 0 && !enemy1Hit) {
+				if (checkXpos1 == bullet_array[bulletUsed].xPos) {
+				//loop to check each y-position of the enemy1 tank against the position of the bullet
+					while (k > 0 && !enemy1Hit) {
+						if (checkYpos1 == bullet_array[bulletUsed].yPos) {
+							enemy1Hit = true;
+						} else {
+							checkYpos1++;
+							
+						}
+						k--;
+					}
+					//increments the x-position of enemy1 tank
+				} else {
+					checkXpos1++;
+					}
+				j--;
+			}
+			i--;
+	}
+	i = 1;
+	//loops to check if bullet hit enemy2
+	while (i > 0 && !enemy2Hit) {
+			j = upTankWidth;
+			k = upTankHeight;
+		//loop to check each x-position of the enemy2 tank against the position of the bullet
+			while( j> 0 && !enemy2Hit) {
+				if (checkXpos2 == bullet_array[bulletUsed].xPos) {
+				//loop to check each y-position of the enemy2 tank against the position of the bullet
+					while (k > 0 && !enemy2Hit) {
+						if (checkYpos2 == bullet_array[bulletUsed].yPos) {
+							enemy2Hit = true;
+						} else {
+							checkYpos2++;
+							
+						}
+						k--;
+					}
+					//increments the x-position of enemy2 tank
+				} else {
+					checkXpos2++;
+					}
+				j--;
+			}
+			i--;
+	}
+	i = 1;
+	//loops to check if bullet hit enemy1
+	while (i > 0 && !enemy3Hit) {
+			j = upTankWidth;
+			k = upTankHeight;
+		//loop to check each x-position of the enemy2 tank against the position of the bullet
+			while( j> 0 && !enemy3Hit) {
+				if (checkXpos3 == bullet_array[bulletUsed].xPos) {
+				//loop to check each y-position of the enemy2 tank against the position of the bullet
+					while (k > 0 && !enemy3Hit) {
+						if (checkYpos3 == bullet_array[bulletUsed].yPos) {
+							enemy3Hit = true;
+						} else {
+							checkYpos3++;
+							
+						}
+						k--;
+					}
+					//increments the x-position of enemy2 tank
+				} else {
+					checkXpos3++;
+					}
+				j--;
+			}
+			i--;
+	}
+	
+	
+	//so that enemy will be redrawn
+	if (enemy1Hit) {
+		enemy1dead = true;
+	}
+	//so that enemy will be redrawn
+	if (enemy2Hit) {
+		enemy2dead = true;
+	}
+	//so that enemy will be redrawn
+	if (enemy3Hit) {
+		enemy3dead = true;
+	}
+	
+	
+}
+
 
 void updateBullets(tank *enemy1, tank *enemy2, tank *enemy3){
 	int i;
@@ -669,43 +825,24 @@ void updateBullets(tank *enemy1, tank *enemy2, tank *enemy3){
 					bullet_array[i].active = false;
 				
 				//check if hit enemy
-				
-				
-				
+				if (bullet_array[0].active) {
+					checkEnemyhit(enemy1, enemy2, enemy3, 0);
+				}
+				//check if hit enemy
+				if (bullet_array[1].active) {
+					checkEnemyhit(enemy1, enemy2, enemy3, 1);
+				}
+				//check if hit enemy
+				if (bullet_array[2].active) {
+					checkEnemyhit(enemy1, enemy2, enemy3, 2);
+				}
+				//will redraw the enemy if dead
+				checkEnemydead(enemy1, enemy2, enemy3);
 		}
 	}
 }
 
-//resets the enemies postions so that they can be redrawn
-void checkEnemydead(tank *enemy1, tank *enemy2, tank *enemy3){
-	if (enemy1dead){
-		//changes enemy1's positon to the lower right corner
-		enemy1->xPos = 220*ENEMYSPEED;
-		enemy1->yPos = 300*ENEMYSPEED;
-		enemy1->direction = up;
-		//redraws the enemy1
-		lcd_draw_image(enemy1->xPos/ENEMYSPEED,upTankWidth,enemy1->yPos/ENEMYSPEED,upTankHeight,upTank,LCD_COLOR_BLUE,LCD_COLOR_BLACK);
-		enemy1dead = false;
-	}
-	if (enemy2dead){
-		//changes enemy2's positon to the top right corner
-		enemy2->xPos = 220*ENEMYSPEED;
-		enemy2->yPos = 20*ENEMYSPEED;
-		enemy2->direction = down;
-		//redraws enemy2
-		lcd_draw_image(enemy2->xPos/ENEMYSPEED,downTankWidth,enemy2->yPos/ENEMYSPEED,downTankHeight,downTank,LCD_COLOR_BLUE,LCD_COLOR_BLACK);
-		enemy2dead = false;
-	}
-	if (enemy3dead){
-		//changes enemy3's positon to the lower left corner
-		enemy3->xPos = 20*ENEMYSPEED;
-		enemy3->yPos = 300*ENEMYSPEED;
-		enemy3->direction = up;
-		//redraws enemy3
-		lcd_draw_image(enemy3->xPos/ENEMYSPEED,upTankWidth,enemy3->yPos/ENEMYSPEED,upTankHeight,upTank,LCD_COLOR_BLUE,LCD_COLOR_BLACK);
-		enemy3dead = false;
-	}
-}
+
 
 int main(void)
 {
