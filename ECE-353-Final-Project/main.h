@@ -19,7 +19,9 @@
 #include "print.h"
 #include "launchpad_io.h"
 #include "interrupts.h"
+#include "uart.h"
 #include "io_expander.h"
+
 
 extern void init_hardware(void);
 extern void initialize_serial_debug(void);
