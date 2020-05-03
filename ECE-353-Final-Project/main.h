@@ -72,4 +72,5 @@ extern volatile PS2_DIR_t PS2_DIR;
 extern volatile bool TIMER1_ALERT;
 extern volatile bool TIMER2_ALERT;
 extern volatile bool TIMER3_ALERT;
+extern volatile bool io_expander_trigger;
 #endif

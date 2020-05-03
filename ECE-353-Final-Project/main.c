@@ -895,6 +895,10 @@ int main(void)
 	bool alert_enemy1 = false;
 	bool alert_enemy2 = false;
 	bool alert_enemy3 = false;
+	bool up_trigger = false;
+	bool left_trigger = false;
+	bool right_trigger = false;
+	bool down_trigger = false;
 	player.xPos = 100 * SPEED;
 	player.yPos = 100 * SPEED;
 	player.direction = up;
@@ -904,7 +908,7 @@ int main(void)
 	for(i = 0;i<3;i++)
 		bullet_array[i].active = false;
 	
-	init_hardware();
+		init_hardware();
 	
 		
 		put_string("\n\r******************************\n\r");
@@ -913,6 +917,20 @@ int main(void)
 		put_string("******************************\n\r\n\r");  
 
 		put_string("Running...\n\r");
+		
+		//for push button
+		while(!io_expander_trigger) {
+			lcd_draw_image(player.xPos/SPEED,upTankWidth,player.yPos/SPEED,upTankHeight,upTank,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
+		} 
+		if (io_expander_trigger && (!left_trigger || !right_trigger || !up_trigger || !down_trigger)) {
+			//gives 8 bit unsigned number-> for buttons need to check first four bits->active low
+			int value_read = io_expander_read_reg(MCP23017_GPIOB_R);
+			up_trigger = !(value_read & (1 << DIR_BTN_UP_PIN));
+			left_trigger = !(value_read & (1 << DIR_BTN_LEFT_PIN));
+			right_trigger = !(value_read & (1 << DIR_BTN_RIGHT_PIN));
+			down_trigger = !(value_read & (1 << DIR_BTN_DOWN_PIN));
+		}
+		io_expander_trigger = false;
 	  //to draw the enemies
 		checkEnemydead(&enemy1, &enemy2, &enemy3);
 		lcd_draw_image(player.xPos/SPEED,upTankWidth,player.yPos/SPEED,upTankHeight,upTank,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
