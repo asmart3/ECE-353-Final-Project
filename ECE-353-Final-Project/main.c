@@ -61,7 +61,7 @@ bool gameOver(bool game_over){
 	return false;
 	} else {
 		DisableInterrupts();
-		printf("\n\rFinal Score:");
+		printf("\n\rFinal Score: ");
 		printf("%d\n\r",score);
 		put_string("Game Over.\n\r");
 		EnableInterrupts();
@@ -69,9 +69,14 @@ bool gameOver(bool game_over){
 		lp_io_clear_pin(BLUE_M);
 		//store new high score
 		eeprom_byte_read(EEPROM_I2C_BASE,EADDR,&HighScore);
-		printf("%d\n\r",HighScore);
-		if(score > HighScore)
+		printf("High Score:");
+		
+		if(score > HighScore){
 			eeprom_byte_write(EEPROM_I2C_BASE,EADDR,score);
+			printf(" %d\n\r",score);
+		}
+		else
+			printf(" %d\n\r",HighScore);
 		return true;
 	}
 }
@@ -924,10 +929,10 @@ int main(void)
 		put_string("Jennifer Kaiser, Andrew Smart, Matthew Beyer\n\r");
 		put_string("******************************\n\r\n\r");  
 
-		eeprom_byte_write(EEPROM_I2C_BASE,EADDR,0x00);
+		//initialize eeprom value to 0
+		//eeprom_byte_write(EEPROM_I2C_BASE,EADDR,0x00);
 		put_string("High Score: ");
 		eeprom_byte_read(EEPROM_I2C_BASE,EADDR,&HighScore);
-		//HighScore += 0x31;
 		printf("%d\n\r",HighScore);
 		
 		//for push button

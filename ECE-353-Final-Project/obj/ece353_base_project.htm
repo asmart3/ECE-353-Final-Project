@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\obj\ece353_base_project.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\obj\ece353_base_project.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Sun May 03 17:04:57 2020
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Sun May 03 17:34:45 2020
 <BR><P>
 <H3>Maximum Stack Usage =        352 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -298,8 +298,8 @@ Global Symbols
 <LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gameOver
 </UL>
 
-<P><STRONG><a name="[7d]"></a>gameOver</STRONG> (Thumb, 104 bytes, Stack size 16 bytes, main.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = gameOver &rArr; eeprom_byte_write &rArr; eeprom_wait_for_write &rArr; i2cSendByte &rArr; I2CMasterBusy
+<P><STRONG><a name="[7d]"></a>gameOver</STRONG> (Thumb, 122 bytes, Stack size 16 bytes, main.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = gameOver &rArr; put_string &rArr; put_char &rArr; fputc &rArr; serial_debug_tx &rArr; pc_buffer_add
 </UL>
 <BR>[Calls]<UL><LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_string
 <LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lp_io_clear_pin
@@ -329,7 +329,7 @@ Global Symbols
 <LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;checkEnemydead
 </UL>
 
-<P><STRONG><a name="[88]"></a>checkEnemydead</STRONG> (Thumb, 580 bytes, Stack size 40 bytes, main.o(.text))
+<P><STRONG><a name="[88]"></a>checkEnemydead</STRONG> (Thumb, 604 bytes, Stack size 40 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = checkEnemydead &rArr; lcd_draw_image &rArr; lcd_set_pos &rArr; lcd_write_data_u16
 </UL>
 <BR>[Calls]<UL><LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;lcd_draw_image
@@ -341,7 +341,7 @@ Global Symbols
 <LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tankCollision
 </UL>
 
-<P><STRONG><a name="[8a]"></a>tankCollision</STRONG> (Thumb, 2684 bytes, Stack size 96 bytes, main.o(.text))
+<P><STRONG><a name="[8a]"></a>tankCollision</STRONG> (Thumb, 2686 bytes, Stack size 96 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 224<LI>Call Chain = tankCollision &rArr; checkEnemydead &rArr; lcd_draw_image &rArr; lcd_set_pos &rArr; lcd_write_data_u16
 </UL>
 <BR>[Calls]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;checkEnemydead
@@ -465,7 +465,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[76]"></a>main</STRONG> (Thumb, 2932 bytes, Stack size 72 bytes, main.o(.text))
+<P><STRONG><a name="[76]"></a>main</STRONG> (Thumb, 2920 bytes, Stack size 72 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 352<LI>Call Chain = main &rArr; playerMove &rArr; tankCollision &rArr; checkEnemydead &rArr; lcd_draw_image &rArr; lcd_set_pos &rArr; lcd_write_data_u16
 </UL>
 <BR>[Calls]<UL><LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;uart_rx_poll
@@ -475,7 +475,6 @@ Global Symbols
 <LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;io_expander_write_reg
 <LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;io_expander_read_reg
 <LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ft6x06_read_td_status
-<LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;eeprom_byte_write
 <LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;eeprom_byte_read
 <LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;init_hardware
 <LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;moveBullet
@@ -1149,16 +1148,15 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;init_hardware
 </UL>
 
-<P><STRONG><a name="[85]"></a>eeprom_byte_write</STRONG> (Thumb, 106 bytes, Stack size 32 bytes, eeprom.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = eeprom_byte_write &rArr; eeprom_wait_for_write &rArr; i2cSendByte &rArr; I2CMasterBusy
+<P><STRONG><a name="[85]"></a>eeprom_byte_write</STRONG> (Thumb, 106 bytes, Stack size 24 bytes, eeprom.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = eeprom_byte_write &rArr; eeprom_wait_for_write &rArr; i2cSendByte &rArr; I2CMasterBusy
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;eeprom_wait_for_write
 <LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;i2cSendByte
 <LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;I2CMasterBusy
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;i2cSetSlaveAddr
 </UL>
-<BR>[Called By]<UL><LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-<LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gameOver
+<BR>[Called By]<UL><LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;gameOver
 </UL>
 
 <P><STRONG><a name="[84]"></a>eeprom_byte_read</STRONG> (Thumb, 124 bytes, Stack size 24 bytes, eeprom.o(.text))
