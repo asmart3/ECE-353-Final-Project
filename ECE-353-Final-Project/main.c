@@ -7,7 +7,7 @@
 barrier barriers[6];
 int numBarriers = 6;
 int SPEED = 1; //lower number is faster
-int ENEMYSPEED = 1;
+int ENEMYSPEED = 2;
 //direction of the player's tank
 volatile PS2_DIR_t TANK_DIRECTION = PS2_DIR_CENTER;
 
@@ -54,12 +54,16 @@ void EnableInterrupts(void)
 }
 
 //Check Tank Collision with Barrier
-bool checkCollision(int xPos, int yPos){
+bool checkCollision(int xPos, int yPos, bool ifEnemy){
 	int i;
 	int rightSide,bottomSide;
-	
-	xPos /=SPEED;
-	yPos /=SPEED;
+	if (ifEnemy) {
+		xPos /=ENEMYSPEED;
+		yPos /=ENEMYSPEED;
+	} else {
+		xPos /=SPEED;
+		yPos /=SPEED;
+	}
 	xPos -=16;
 	yPos -=16;
 	rightSide = xPos + upTankWidth;//+16;
@@ -424,7 +428,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 		//checks for direction of enemy1
 		if (enemy1->direction == left) {
 			//checks for left edge of screen and barrier collison
-			if(((enemy1->xPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy1->xPos -1,enemy1->yPos))){
+			if(((enemy1->xPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy1->xPos -1,enemy1->yPos, true))){
 					//moves enemy1 left one pixel
 				enemy1->xPos -= 1;
 				enemy1->moves--; // decrements moves remaining
@@ -435,7 +439,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 		}
 		if (enemy1->direction == right) {
 			//checks for right edge of screen and barrier collison
-			if(((enemy1->xPos/ENEMYSPEED + (upTankWidth/2))<COLS) && (!checkCollision(enemy1->xPos+1,enemy1->yPos))){
+			if(((enemy1->xPos/ENEMYSPEED + (upTankWidth/2))<COLS) && (!checkCollision(enemy1->xPos+1,enemy1->yPos, true))){
 					//moves enemy1 right one pixel
 				enemy1->xPos += 1;
 				enemy1->moves--; // decrements moves remaining
@@ -446,7 +450,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 		}
 		if (enemy1->direction == up) {
 			//checks for left edge of screen and barrier collison
-			if(((enemy1->yPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy1->xPos,enemy1->yPos-1))){
+			if(((enemy1->yPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy1->xPos,enemy1->yPos-1, true))){
 					//moves enemy1 up one pixel
 				enemy1->yPos -= 1;
 				enemy1->moves--; // decrements moves remaining
@@ -457,7 +461,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 		}
 		if (enemy1->direction == down) {
 			//checks for left edge of screen and barrier collison
-			if(((enemy1->yPos/ENEMYSPEED + (upTankWidth/2))<ROWS) && (!checkCollision(enemy1->xPos,enemy1->yPos+1))){
+			if(((enemy1->yPos/ENEMYSPEED + (upTankWidth/2))<ROWS) && (!checkCollision(enemy1->xPos,enemy1->yPos+1, true))){
 					//moves enemy1 down one pixel
 				enemy1->yPos += 1;
 				enemy1->moves--; // decrements moves remaining
@@ -472,7 +476,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 	//checks for direction of enemy2
 	if (enemy2->direction == left) {
 		//checks for left edge of screen and barrier collison
-		if(((enemy2->xPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy2->xPos -1,enemy2->yPos))){
+		if(((enemy2->xPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy2->xPos -1,enemy2->yPos, true))){
 				//moves enemy1 left one pixel
 			enemy2->xPos -= 1;
 			enemy2->moves--; // decrements moves remaining
@@ -483,7 +487,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 	}
 	if (enemy2->direction == right) {
 		//checks for right edge of screen and barrier collison
-		if(((enemy2->xPos/ENEMYSPEED + (upTankWidth/2))<COLS) && (!checkCollision(enemy2->xPos+1,enemy2->yPos))){
+		if(((enemy2->xPos/ENEMYSPEED + (upTankWidth/2))<COLS) && (!checkCollision(enemy2->xPos+1,enemy2->yPos, true))){
 				//moves enemy1 right one pixel
 			enemy2->xPos += 1;
 			enemy2->moves--; // decrements moves remaining
@@ -494,7 +498,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 	}
 	if (enemy2->direction == up) {
 		//checks for left edge of screen and barrier collison
-		if(((enemy2->yPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy2->xPos,enemy2->yPos-1))){
+		if(((enemy2->yPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy2->xPos,enemy2->yPos-1, true))){
 				//moves enemy1 up one pixel
 			enemy2->yPos -= 1;
 			enemy2->moves--; // decrements moves remaining
@@ -505,7 +509,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 	}
 	if (enemy2->direction == down) {
 		//checks for left edge of screen and barrier collison
-		if(((enemy2->yPos/ENEMYSPEED + (upTankWidth/2))<ROWS) && (!checkCollision(enemy2->xPos,enemy2->yPos+1))){
+		if(((enemy2->yPos/ENEMYSPEED + (upTankWidth/2))<ROWS) && (!checkCollision(enemy2->xPos,enemy2->yPos+1, true))){
 				//moves enemy1 down one pixel
 			enemy2->yPos += 1;
 			enemy2->moves--; // decrements moves remaining
@@ -519,7 +523,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 	//checks for direction of enemy3
 	if (enemy3->direction == left) {
 		//checks for left edge of screen and barrier collison
-		if(((enemy3->xPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy3->xPos -1,enemy3->yPos))){
+		if(((enemy3->xPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy3->xPos -1,enemy3->yPos, true))){
 				//moves enemy1 left one pixel
 			enemy3->xPos -= 1;
 			enemy3->moves--; // decrements moves remaining
@@ -530,7 +534,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 	}
 	if (enemy3->direction == right) {
 		//checks for right edge of screen and barrier collison
-		if(((enemy3->xPos/ENEMYSPEED + (upTankWidth/2))<COLS) && (!checkCollision(enemy3->xPos+1,enemy3->yPos))){
+		if(((enemy3->xPos/ENEMYSPEED + (upTankWidth/2))<COLS) && (!checkCollision(enemy3->xPos+1,enemy3->yPos, true))){
 				//moves enemy1 right one pixel
 			enemy3->xPos += 1;
 			enemy3->moves--;
@@ -541,7 +545,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 	}
 	if (enemy3->direction == up) {
 		//checks for left edge of screen and barrier collison
-		if(((enemy3->yPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy3->xPos,enemy3->yPos-1))){
+		if(((enemy3->yPos/ENEMYSPEED - (upTankWidth/2))>0) && (!checkCollision(enemy3->xPos,enemy3->yPos-1, true))){
 				//moves enemy1 up one pixel
 			enemy3->yPos -= 1;
 			enemy3->moves--; // decrements moves remaining
@@ -552,7 +556,7 @@ void enemy1Move(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool *al
 	}
 	if (enemy3->direction == down) {
 		//checks for left edge of screen and barrier collison
-		if(((enemy3->yPos/ENEMYSPEED + (upTankWidth/2))<ROWS) && (!checkCollision(enemy3->xPos,enemy3->yPos+1))){
+		if(((enemy3->yPos/ENEMYSPEED + (upTankWidth/2))<ROWS) && (!checkCollision(enemy3->xPos,enemy3->yPos+1, true))){
 				//moves enemy1 down one pixel
 			enemy3->yPos += 1;
 			enemy3->moves--; // decrements moves remaining
@@ -573,7 +577,7 @@ void playerMove(tank *player,bool *alert_move, volatile PS2_DIR_t TANK_DIRECTION
 		//checks for left edge of screen
 			if((player->xPos/SPEED - (upTankWidth/2))>0){
 				//checks for collision of barrier
-				if(!checkCollision(player->xPos -1,player->yPos)){
+				if(!checkCollision(player->xPos -1,player->yPos, false)){
 					player->direction = left;
 					player->xPos -= 1;
 					*alert_move = true;
@@ -584,7 +588,7 @@ void playerMove(tank *player,bool *alert_move, volatile PS2_DIR_t TANK_DIRECTION
 			//checks for right edge of screen
 			if((player->xPos/SPEED + (upTankWidth/2))<COLS){
 				//checks for collision of barrier
-				if(!checkCollision(player->xPos+1,player->yPos)){
+				if(!checkCollision(player->xPos+1,player->yPos, false)){
 					player->direction = right;
 					player->xPos += 1;
 					*alert_move = true;
@@ -596,7 +600,7 @@ void playerMove(tank *player,bool *alert_move, volatile PS2_DIR_t TANK_DIRECTION
 			//checks for top edge of screen
 			if((player->yPos/SPEED - (upTankWidth/2))>0){
 				//checks for collision of barrier
-				if(!checkCollision(player->xPos,player->yPos-1)){
+				if(!checkCollision(player->xPos,player->yPos-1, false)){
 					player->direction = up;
 					player->yPos -= 1;
 					*alert_move = true;
@@ -606,7 +610,7 @@ void playerMove(tank *player,bool *alert_move, volatile PS2_DIR_t TANK_DIRECTION
 			//checks for bottom of screen
 			if((player->yPos/SPEED + (upTankWidth/2))<ROWS){
 				//checks for collision of barrier
-				if(!checkCollision(player->xPos,player->yPos+1)){
+				if(!checkCollision(player->xPos,player->yPos+1, false)){
 					player->direction = down;
 					player->yPos += 1;
 					*alert_move = true;
