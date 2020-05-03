@@ -22,7 +22,7 @@
 #include "uart.h"
 #include "io_expander.h"
 #include "eeprom.h"
-
+#include "font.h"
 
 extern void init_hardware(void);
 extern void initialize_serial_debug(void);

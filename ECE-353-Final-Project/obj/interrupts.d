@@ -33,3 +33,5 @@
 .\obj\interrupts.o: ..\peripherals\include\launchpad_io.h
 .\obj\interrupts.o: ..\peripherals\include\io_expander.h
 .\obj\interrupts.o: ..\peripherals\include\eeprom.h
+.\obj\interrupts.o: font.h
+.\obj\interrupts.o: bitmap_db.h

@@ -432,6 +432,21 @@
               <FileType>5</FileType>
               <FilePath>.\interrupts.h</FilePath>
             </File>
+            <File>
+              <FileName>font.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\font.c</FilePath>
+            </File>
+            <File>
+              <FileName>font.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\font.h</FilePath>
+            </File>
+            <File>
+              <FileName>bitmap_db.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\bitmap_db.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

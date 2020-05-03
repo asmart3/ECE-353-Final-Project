@@ -33,3 +33,5 @@
 .\obj\main.o: interrupts.h
 .\obj\main.o: ..\peripherals\include\io_expander.h
 .\obj\main.o: ..\peripherals\include\eeprom.h
+.\obj\main.o: font.h
+.\obj\main.o: bitmap_db.h

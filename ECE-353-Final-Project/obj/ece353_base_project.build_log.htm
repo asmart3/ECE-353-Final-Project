@@ -30,14 +30,16 @@ Build target 'HW3'
 compiling main.c...
 ..\drivers\include\timers.h(37): warning:  #1295-D: Deprecated declaration config_timer1 - give arg types
   void config_timer1();
+bitmap_db.h(43): warning:  #1-D: last line of file ends without a newline
+  #endif /* __BITMAP_DB_H_ */
 main.c(433): warning:  #177-D: variable "randomnumber"  was declared but never referenced
   	int randomnumber = 200;
 main.c(439): warning:  #177-D: variable "directionCheck"  was declared but never referenced
   	tank directionCheck;
-main.c: 3 warnings, 0 errors
+main.c: 4 warnings, 0 errors
 linking...
-Program Size: Code=22932 RO-data=1316 RW-data=64 ZI-data=888  
-".\obj\ece353_base_project.axf" - 0 Error(s), 3 Warning(s).
+Program Size: Code=23384 RO-data=1808 RW-data=64 ZI-data=888  
+".\obj\ece353_base_project.axf" - 0 Error(s), 4 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -63,8 +65,8 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE:5.4.0
 
    * Component: Keil::Device:Startup:1.0.1
-      Include file:  Device\Include\TM4C123\TM4C123.h
       Source file:   Device\Source\system_TM4C123.c
+      Include file:  Device\Include\TM4C123\TM4C123.h
       Source file:   Device\Source\ARM\startup_TM4C123.s
 Build Time Elapsed:  00:00:01
 </pre>

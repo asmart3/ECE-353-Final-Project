@@ -895,14 +895,36 @@ void moveBullet(bullet *b) {
 		lcd_draw_image(b->xPos, bulletVecWidth, b->yPos, bulletVecHeight, bulletVec, LCD_COLOR_BLACK, LCD_COLOR_BLACK);
 }
 
+void LCD_print(){
+		uint8_t HighScore;
+		int digits;
+		eeprom_byte_read(EEPROM_I2C_BASE,EADDR,&HighScore);
+		digits = (int)HighScore;
+		//High
+		lcd_draw_char(10,6,10,11,fontBitMap+110,LCD_COLOR_WHITE,LCD_COLOR_BLACK,0x00);
+		lcd_draw_char(18,1,10,11,fontBitMap+176,LCD_COLOR_WHITE,LCD_COLOR_BLACK,0x00);
+		lcd_draw_char(20,5,10,11,fontBitMap+154,LCD_COLOR_WHITE,LCD_COLOR_BLACK,0x00);
+		lcd_draw_char(27,5,10,11,fontBitMap+165,LCD_COLOR_WHITE,LCD_COLOR_BLACK,0x00);
+		
+		//Score
+		lcd_draw_char(37,5,10,11,fontBitMap+121,LCD_COLOR_WHITE,LCD_COLOR_BLACK,0x00);
+		lcd_draw_char(44,5,10,11,fontBitMap+132,LCD_COLOR_WHITE,LCD_COLOR_BLACK,0x00);
+		lcd_draw_char(51,5,10,11,fontBitMap+187,LCD_COLOR_WHITE,LCD_COLOR_BLACK,0x00);
+		lcd_draw_char(58,2,10,11,fontBitMap+198,LCD_COLOR_WHITE,LCD_COLOR_BLACK,0x00);
+		lcd_draw_char(62,5,10,11,fontBitMap+143,LCD_COLOR_WHITE,LCD_COLOR_BLACK,0x00);
+		
+	//NUMBER
+		lcd_draw_char(74,5,10,11,fontBitMap+(11*(digits/100)),LCD_COLOR_WHITE,LCD_COLOR_BLACK,0x00);
+		lcd_draw_char(81,5,10,11,fontBitMap+(11*((digits%100)/10)),LCD_COLOR_WHITE,LCD_COLOR_BLACK,0x00);
+		lcd_draw_char(88,5,10,11,fontBitMap+(11*((digits%100)%10)),LCD_COLOR_WHITE,LCD_COLOR_BLACK,0x00);
 
+}
 
 
 int main(void)
 {
 	int i;
 	uint8_t touch_event;
-	uint8_t HighScore;
 	char input;
 	bool alert_move = false;
 	bool alert_enemy1 = false;
@@ -931,10 +953,10 @@ int main(void)
 
 		//initialize eeprom value to 0
 		//eeprom_byte_write(EEPROM_I2C_BASE,EADDR,0x00);
-		put_string("High Score: ");
-		eeprom_byte_read(EEPROM_I2C_BASE,EADDR,&HighScore);
-		printf("%d\n\r",HighScore);
 		
+		LCD_print();
+		
+		io_expander_write_reg(MCP23017_GPIOA_R,0xFF);
 		//for push button
 		while(!io_expander_trigger) {
 			lcd_draw_image(player.xPos/SPEED,upTankWidth,player.yPos/SPEED,upTankHeight,upTank,LCD_COLOR_GREEN,LCD_COLOR_BLACK);
@@ -948,6 +970,9 @@ int main(void)
 			down_trigger = !(value_read & (1 << DIR_BTN_DOWN_PIN));
 		}
 		io_expander_trigger = false;
+		
+		//remove High score from LCD
+		lcd_draw_rectangle(10,83,10,11,LCD_COLOR_BLACK);
 		
 		put_string("Running...\n\r");
 
@@ -1252,7 +1277,7 @@ void init_hardware(void)
   init_serial_debug(true,true);
 	ft6x06_init();
 	uart0_config_gpio();
-	uart_init(UART0_BASE, false, false);
+	uart_init(UART0_BASE, true, true);
 	io_expander_init();
 	eeprom_init();
 	EnableInterrupts();
