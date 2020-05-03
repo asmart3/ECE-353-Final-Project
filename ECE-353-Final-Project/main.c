@@ -7,7 +7,7 @@
 barrier barriers[6];
 int numBarriers = 6;
 int SPEED = 1; //lower number is faster
-int ENEMYSPEED = 1;
+int ENEMYSPEED = 3;
 //direction of the player's tank
 volatile PS2_DIR_t TANK_DIRECTION = PS2_DIR_CENTER;
 
@@ -57,7 +57,7 @@ bool gameOver(bool game_over){
 	if (!game_over) {
 	return false;
 	} else {
-		printf("Game Over");
+		put_string("Game Over");
 		while (game_over) {
 			lcd_clear_screen(LCD_COLOR_BLACK);
 		}
@@ -654,7 +654,7 @@ void initBarriers(){
 	barrier block3 ={100,140,40,40,false};
 	barrier block4 = {0,120,20,70,false};
 	barrier block5 = {220,120,20,70,false};
-	barrier block6 = {50, 250, 140, 30, false};
+	barrier block6 = {50, 290, 140, 30, false};
 	
 	barriers[0] = block; 
 	barriers[1] = block2;
@@ -723,13 +723,19 @@ void updateBullets(tank *enemy1, tank *enemy2, tank *enemy3){
 
 
 // shoots bullets out of tanks
-void shoot(tank *t, bullet *b) {
+void shoot(tank *t, bullet *b, bool playerShoot) {
 	// only shoots if bullet is inactive
 	if(!b->active) {
+		
 		// sets up the bullet
 		b->direction = t->direction;
-		b->xPos = t->xPos;
-		b->yPos = t->yPos;
+		if (playerShoot) {
+			b->xPos = t->xPos/SPEED;
+			b->yPos = t->yPos/SPEED;
+			} else { 
+				b->xPos = t->xPos/ENEMYSPEED;
+				b->yPos = t->yPos/ENEMYSPEED;
+			}
 		b->active = true;
 		
 		// bullet is drawn in a different spot depending on where the tank is facing
@@ -792,8 +798,8 @@ void moveBullet(bullet *b) {
 		}
 	}
 	// checks if a bullet has hit an enemy, which kills the enemy and calls checkEnemyDead to respawn him
-	if(((b->xPos-2>=enemy1.xPos-16)&&(b->xPos-2<=enemy1.xPos+16)) || ((b->xPos+2<=enemy1.xPos-16)&&(b->xPos+2>=enemy1.xPos+16))) {
-		if(((b->yPos-2>=enemy1.yPos-16)&&(b->yPos-2<=enemy1.yPos+16)) || ((b->yPos+2<=enemy1.yPos-16)&&(b->yPos+2>=enemy1.yPos+16))) {
+	if(((b->xPos-2>=enemy1.xPos/ENEMYSPEED-16)&&(b->xPos-2<=enemy1.xPos/ENEMYSPEED+16)) || ((b->xPos+2<=enemy1.xPos/ENEMYSPEED-16)&&(b->xPos+2>=enemy1.xPos/ENEMYSPEED+16))) {
+		if(((b->yPos-2>=enemy1.yPos/ENEMYSPEED-16)&&(b->yPos-2<=enemy1.yPos/ENEMYSPEED+16)) || ((b->yPos+2<=enemy1.yPos/ENEMYSPEED-16)&&(b->yPos+2>=enemy1.yPos/ENEMYSPEED+16))) {
 			enemy1dead = true;
 			checkEnemydead(&enemy1, &enemy2, &enemy3);
 			b->active = false; // deactivates bullet
@@ -805,8 +811,8 @@ void moveBullet(bullet *b) {
 		}
 	}
 	// checks if a bullet has hit an enemy, which kills the enemy and calls checkEnemyDead to respawn him
-	if(((b->xPos-2>=enemy2.xPos-16)&&(b->xPos-2<=enemy2.xPos+16)) || ((b->xPos+2<=enemy2.xPos-16)&&(b->xPos+2>=enemy2.xPos+16))) {
-		if(((b->yPos-2>=enemy2.yPos-16)&&(b->yPos-2<=enemy2.yPos+16)) || ((b->yPos+2<=enemy2.yPos-16)&&(b->yPos+2>=enemy2.yPos+16))) {
+	if(((b->xPos-2>=enemy2.xPos/ENEMYSPEED-16)&&(b->xPos-2<=enemy2.xPos/ENEMYSPEED+16)) || ((b->xPos+2<=enemy2.xPos/ENEMYSPEED-16)&&(b->xPos+2>=enemy2.xPos/ENEMYSPEED+16))) {
+		if(((b->yPos-2>=enemy2.yPos/ENEMYSPEED-16)&&(b->yPos-2<=enemy2.yPos/ENEMYSPEED+16)) || ((b->yPos+2<=enemy2.yPos/ENEMYSPEED-16)&&(b->yPos+2>=enemy2.yPos/ENEMYSPEED+16))) {
 			enemy2dead = true;
 			checkEnemydead(&enemy1, &enemy2, &enemy3);
 			b->active = false; // deactivates bullet
@@ -818,8 +824,8 @@ void moveBullet(bullet *b) {
 		}
 	}
 	// checks if a bullet has hit an enemy, which kills the enemy and calls checkEnemyDead to respawn him
-	if(((b->xPos-2>=enemy3.xPos-16)&&(b->xPos-2<=enemy3.xPos+16)) || ((b->xPos+2<=enemy3.xPos-16)&&(b->xPos+2>=enemy3.xPos+16))) {
-		if(((b->yPos-2>=enemy3.yPos-16)&&(b->yPos-2<=enemy3.yPos+16)) || ((b->yPos+2<=enemy3.yPos-16)&&(b->yPos+2>=enemy3.yPos+16))) {
+	if(((b->xPos-2>=enemy3.xPos/ENEMYSPEED-16)&&(b->xPos-2<=enemy3.xPos/ENEMYSPEED+16)) || ((b->xPos+2<=enemy3.xPos/ENEMYSPEED-16)&&(b->xPos+2>=enemy3.xPos/ENEMYSPEED+16))) {
+		if(((b->yPos-2>=enemy3.yPos/ENEMYSPEED-16)&&(b->yPos-2<=enemy3.yPos/ENEMYSPEED+16)) || ((b->yPos+2<=enemy3.yPos/ENEMYSPEED-16)&&(b->yPos+2>=enemy3.yPos/ENEMYSPEED+16))) {
 			enemy3dead = true;
 			checkEnemydead(&enemy1, &enemy2, &enemy3);
 			b->active = false; // deactivates bullet
@@ -1000,21 +1006,21 @@ int main(void)
 				enemy1Shot.waitTime++;
 			}
 			else {
-				shoot(&enemy1, &enemy1Shot);
+				shoot(&enemy1, &enemy1Shot, false);
 				enemy1Shot.waitTime = 0;
 			}
 			if(!enemy2Shot.active && enemy2Shot.waitTime != 300) {
 				enemy2Shot.waitTime++;
 			}
 			else {
-				shoot(&enemy2, &enemy2Shot);
+				shoot(&enemy2, &enemy2Shot, false);
 				enemy2Shot.waitTime = 0;
 			}
 			if(!enemy3Shot.active && enemy3Shot.waitTime != 300) {
 				enemy3Shot.waitTime++;
 			}
 			else {
-				shoot(&enemy3, &enemy3Shot);
+				shoot(&enemy3, &enemy3Shot, false);
 				enemy3Shot.waitTime = 0;
 			}
 			
@@ -1034,7 +1040,7 @@ int main(void)
 				//	}
 					
 				//}
-				shoot(&player, &playerShot);
+				shoot(&player, &playerShot, true);
 			}
 				
 		}
