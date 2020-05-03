@@ -34,6 +34,8 @@ typedef struct
 	enum direction direction;
 	int delay; // time since last shot
 	int moves;
+	bool dead;
+	int waitTime;
 }	tank;
 
 typedef struct
@@ -51,6 +53,7 @@ typedef struct
 	int yPos;
 	enum direction direction;
 	bool active;	
+	int waitTime;
 }bullet;
 
 typedef enum{

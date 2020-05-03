@@ -21,5 +21,8 @@ extern const uint8_t downTank[];
 extern const uint8_t downTankWidth;
 extern const uint8_t downTankHeight;
 
+extern const uint8_t bulletVec[];
+extern const uint8_t bulletVecWidth;
+extern const uint8_t bulletVecHeight;
 
 #endif

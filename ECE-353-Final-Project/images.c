@@ -163,3 +163,15 @@ const uint8_t downTank[] =
 const uint8_t downTankWidth = 32;
 const uint8_t downTankHeight = 32;
 
+const uint8_t bulletVec[] =
+{
+	0x00,
+	0x3C,
+	0x3C,
+	0x3C,
+	0x3C,
+	0x00,
+};
+
+const uint8_t bulletVecWidth = 6;
+const uint8_t bulletVecHeight = 6;
