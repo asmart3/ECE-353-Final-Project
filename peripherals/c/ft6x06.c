@@ -1,5 +1,7 @@
 #include "ft6x06.h"
 
+#define FT6X06_DEV_ID			0x38
+
 //*****************************************************************************
 // Sets the address to read/write from in the FT6x06  
 //
@@ -27,7 +29,7 @@ static i2c_status_t ft6x06_set_addr
   // ADD CODE
   // Set the I2C device address 
   //==============================================================
-  status = i2cSetSlaveAddr(i2c_base,0x20,I2C_WRITE);
+	status = i2cSetSlaveAddr(i2c_base, FT6X06_DEV_ID, I2C_WRITE);
     
     
   if ( status != I2C_OK )
@@ -39,8 +41,11 @@ static i2c_status_t ft6x06_set_addr
   // ADD CODE
   // Send the register address
   //==============================================================
-	status = i2cSendByte(i2c_base,reg_address,I2C_MCS_START|I2C_MCS_RUN);
-
+	status = i2cSendByte(i2c_base, reg_address, I2C_MCS_START | I2C_MCS_RUN |I2C_MCS_STOP);
+	if ( status != I2C_OK )
+  {
+    return status;
+  }
   return status;
 }
 
@@ -70,7 +75,8 @@ static i2c_status_t ft6x06_read_data
   // ADD CODE
   // Set the I2C address 
   //==============================================================
-  status = i2cSetSlaveAddr(i2c_base,0x20,I2C_READ);
+  status = i2cSetSlaveAddr(i2c_base, FT6X06_DEV_ID, I2C_READ);
+    
   
   if ( status != I2C_OK )
   {
@@ -81,7 +87,7 @@ static i2c_status_t ft6x06_read_data
   // ADD CODE
   // get the data
   //==============================================================
-  status = i2cGetByte(i2c_base,data,I2C_MCS_START|I2C_MCS_RUN|I2C_MCS_STOP);
+  status = i2cGetByte( i2c_base, data , I2C_MCS_START | I2C_MCS_RUN | I2C_MCS_STOP);
 
 
   return status;
@@ -93,14 +99,14 @@ static i2c_status_t ft6x06_read_data
 //*****************************************************************************
 uint8_t ft6x06_read_td_status(void)
 { 
+	uint8_t data;
   // ADD CODE
   // Return the number of active touch points.  The only valid values of the 
   // register will be 0, 1, or 2.
-	uint8_t data;
-	ft6x06_set_addr(FT6X06_I2C_BASE,FT6X06_TD_STATUS_R);
-	ft6x06_read_data(FT6X06_I2C_BASE,&data);
-	//printf("");//,data);
-	return data;
+	if(ft6x06_set_addr(FT6X06_I2C_BASE, FT6X06_TD_STATUS_R) != I2C_OK) return 0xF;
+	if(ft6x06_read_data(FT6X06_I2C_BASE, &data)) return 0xF;
+	if((data & 0xF) > 2) return 0xF;
+	return (data & 0xF);
 } 
 
 
@@ -112,22 +118,18 @@ uint16_t ft6x06_read_x(void)
   // ADD CODE
   // Return the X coordinate of the last touch point
   // This will require reading P1_XH and P1_XL
-	uint8_t dataH,dataL;
-	uint16_t data;
+	uint8_t xh;
+	uint16_t x;
+	uint8_t xl;
 	
-	ft6x06_set_addr(FT6X06_I2C_BASE,FT6X06_P1_XH_R);
-	ft6x06_read_data(FT6X06_I2C_BASE,&dataH);
+	if(ft6x06_set_addr(FT6X06_I2C_BASE, FT6X06_P1_XH_R) != I2C_OK) return 0xFF;
+	if(ft6x06_read_data(FT6X06_I2C_BASE, &xh) != I2C_OK) return 0xFF;
 	
-	ft6x06_set_addr(FT6X06_I2C_BASE,FT6X06_P1_XL_R);
-	ft6x06_read_data(FT6X06_I2C_BASE,&dataL);
+	if(ft6x06_set_addr(FT6X06_I2C_BASE, FT6X06_P1_XL_R) != I2C_OK) return 0xFF;
+	if(ft6x06_read_data(FT6X06_I2C_BASE, &xl) != I2C_OK) return 0xFF;
 	
-	// combine upper and lower data
-	data = dataH<<8;
-	data |= dataL;
-	// flip data
-	data = 239 - data;
-	
-	return data;
+	x = ((xh & 0xF) << 8) + xl;
+	return 239-x;
 } 
 
 //*****************************************************************************
@@ -138,22 +140,18 @@ uint16_t ft6x06_read_y(void)
   // ADD CODE
   // Return the Y coordinate of the last touch point 
   // This will require reading P1_YH and P1_YL
-	uint8_t dataH,dataL;
-	uint16_t data;
+	uint8_t yh;
+	uint16_t y;
+	uint8_t yl;
 	
-	ft6x06_set_addr(FT6X06_I2C_BASE,FT6X06_P1_YH_R);
-	ft6x06_read_data(FT6X06_I2C_BASE,&dataH);
+	if(ft6x06_set_addr(FT6X06_I2C_BASE, FT6X06_P1_YH_R) != I2C_OK) return 0xFF;
+	if(ft6x06_read_data(FT6X06_I2C_BASE, &yh) != I2C_OK) return 0xFF;
 	
-	ft6x06_set_addr(FT6X06_I2C_BASE,FT6X06_P1_YL_R);
-	ft6x06_read_data(FT6X06_I2C_BASE,&dataL);	
-
-	// combine upper and lower data
-	data = dataH<<8;
-	data |= dataL;
-	// flip data
-	data = 319 - data;	
+	if(ft6x06_set_addr(FT6X06_I2C_BASE, FT6X06_P1_YL_R) != I2C_OK) return 0xFF;
+	if(ft6x06_read_data(FT6X06_I2C_BASE, &yl) != I2C_OK) return 0xFF;
 	
-	return data;
+	y = ((yh & 0xF) << 8) + yl;
+	return 239-y;
 } 
 
 //*****************************************************************************
