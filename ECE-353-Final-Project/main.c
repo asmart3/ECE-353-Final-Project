@@ -58,7 +58,7 @@ bool gameOver(bool game_over){
 	return false;
 	} else {
 		DisableInterrupts();
-		put_string("You lose. Game Over.\n\r");
+		put_string("Game Over.\n\r");
 		EnableInterrupts();
 		while (game_over) {
 			lcd_clear_screen(LCD_COLOR_BLACK);
@@ -401,7 +401,7 @@ bool tankCollision(tank *player, tank *enemy1, tank *enemy2, tank *enemy3, bool 
 	}
 	if (needNewDirection4) {
 		DisableInterrupts();
-		put_string("Ran into enemy tank.\n\r");
+		//put_string("Ran into enemy tank.\n\r");
 		game_over = true;
 		paused = true;
 		//gameOver(true);
@@ -648,7 +648,7 @@ void playerMove(tank *player,bool *alert_move, volatile PS2_DIR_t TANK_DIRECTION
 			game_over = true;
 			paused = true;
 			DisableInterrupts();
-			put_string("\n\rYou ran into an enemy tank.\n\r");
+			//put_string("Ran into an enemy tank.\n\r");
 			//gameOver(game_over);
 			EnableInterrupts();
 		}
@@ -993,12 +993,16 @@ int main(void)
 			//uses interupts to move the player
 			if(TIMER2_ALERT){
 				//check x,y ps2 positions
+				enemy1Move(&player, &enemy1, &enemy2, &enemy3, &alert_enemy1, &alert_enemy2, &alert_enemy3);
 				playerMove(&player, &alert_move, PS2_DIR, &enemy1, &enemy2, &enemy3);
 				TIMER2_ALERT = false;
 			}
 			
 			if(TIMER3_ALERT){
-				enemy1Move(&player, &enemy1, &enemy2, &enemy3, &alert_enemy1, &alert_enemy2, &alert_enemy3);
+				printf("\n\rFinal Score:");
+				printf("%d\n\r",score);
+				game_over = true;
+				gameOver(game_over);
 				TIMER3_ALERT = false;
 			}
 			//barriers
@@ -1072,6 +1076,8 @@ int main(void)
 //*****************************************************************************
 void init_hardware(void)
 {
+	//for 30 seconds
+	int setGameEnd = 50000000*30;
 	lp_io_init();
   lcd_config_gpio();
   lcd_config_screen();
@@ -1083,6 +1089,6 @@ void init_hardware(void)
   //
 	config_timer1();
   gp_timer_config_32(TIMER2_BASE,TIMER_TAMR_TAMR_PERIOD, 1000000, false, true);
-  gp_timer_config_32(TIMER3_BASE,TIMER_TAMR_TAMR_PERIOD, 500000, false, true);
+  gp_timer_config_32(TIMER3_BASE,TIMER_TAMR_TAMR_PERIOD, setGameEnd, false, true);
   gp_timer_config_32(TIMER4_BASE,TIMER_TAMR_TAMR_PERIOD, 50000, false, true);
 }
