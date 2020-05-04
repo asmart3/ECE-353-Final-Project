@@ -985,8 +985,23 @@ int main(void)
 		drawBarriers();
 	
 	while(!gameOver(game_over)){
+		if(paused) {
+			input = fgetc_nb(stdin);
+			if(input == ' ') {
+				paused = false;
+				input = NULL;
+				put_string("\n\rRunning...\n\r");
+			}
+		}
 		
 		while(!paused) {
+			input = fgetc_nb(stdin); 
+			if(input == ' ') {
+				paused = true;
+				input = NULL;
+				put_string("\n\rPaused.");
+				break;
+			}
 			io_expander_write_reg(MCP23017_GPIOA_R,score);
 			//draws the players tank according to direction
 			if(alert_move){
@@ -1007,13 +1022,7 @@ int main(void)
 					
 			}
 			
-			input = uart_rx_poll(UART0_BASE, false);
-			if(input == ' ') {
-				paused = true;
-				printPauseMsg = true;
-				input = NULL;
-				DisableInterrupts();
-			}
+			
 			
 			//draws the players tank according to direction
 			if(alert_move){
@@ -1034,13 +1043,6 @@ int main(void)
 					
 			}
 			
-			input = uart_rx_poll(UART0_BASE, false);
-			if(input == ' ') {
-				paused = true;
-				printPauseMsg = true;
-				input = NULL;
-				DisableInterrupts();
-			}
 			
 			if(alert_enemy1){
 				switch(enemy1.direction){
@@ -1059,14 +1061,7 @@ int main(void)
 				}
 					
 			}
-			
-			input = uart_rx_poll(UART0_BASE, false);
-			if(input == ' ') {
-				paused = true;
-				printPauseMsg = true;
-				input = NULL;
-				DisableInterrupts();
-			}
+		
 			
 			if(alert_enemy2){
 				switch(enemy2.direction){
@@ -1086,13 +1081,6 @@ int main(void)
 					
 			}
 			
-			input = uart_rx_poll(UART0_BASE, false);
-			if(input == ' ') {
-				paused = true;
-				printPauseMsg = true;
-				input = NULL;
-				DisableInterrupts();
-			}
 			
 			if(alert_enemy3){
 				switch(enemy3.direction){
@@ -1112,14 +1100,6 @@ int main(void)
 					
 			}
 			
-			input = uart_rx_poll(UART0_BASE, false);
-			if(input == ' ') {
-				paused = true;
-				printPauseMsg = true;
-				input = NULL;
-				DisableInterrupts();
-			}
-			
 			//uses interupts to move the player
 			if(TIMER2_ALERT){
 				//check x,y ps2 positions
@@ -1128,13 +1108,6 @@ int main(void)
 				TIMER2_ALERT = false;
 			}
 			
-			input = uart_rx_poll(UART0_BASE, false);
-			if(input == ' ') {
-				paused = true;
-				printPauseMsg = true;
-				input = NULL;
-				DisableInterrupts();
-			}
 			
 			if(TIMER3_ALERT){
 				game_over = true;
@@ -1148,13 +1121,6 @@ int main(void)
 			//drawBarriers();
 			//updateBullets(&enemy1, &enemy2, &enemy3);
 			
-			input = uart_rx_poll(UART0_BASE, false);
-			if(input == ' ') {
-				paused = true;
-				printPauseMsg = true;
-				input = NULL;
-				DisableInterrupts();
-			}
 			
 			// moves all of the bullets
 			if(playerShot.active)
@@ -1167,13 +1133,6 @@ int main(void)
 				moveBullet(&enemy3Shot);
 			
 			
-			input = uart_rx_poll(UART0_BASE, false);
-			if(input == ' ') {
-				paused = true;
-				printPauseMsg = true;
-				input = NULL;
-				DisableInterrupts();
-			}
 			
 			// forces enemy tanks to 'reload' before they can shoot again
 			if(!enemy1Shot.active && enemy1Shot.waitTime != 300) {
@@ -1198,13 +1157,6 @@ int main(void)
 				enemy3Shot.waitTime = 0;
 			}
 			
-			input = uart_rx_poll(UART0_BASE, false);
-			if(input == ' ') {
-				paused = true;
-				printPauseMsg = true;
-				input = NULL;
-				DisableInterrupts();
-			}
 			
 			// players tank shoots when player touches LCD screen
 			touch_event = ft6x06_read_td_status();
@@ -1223,25 +1175,8 @@ int main(void)
 				//}
 				shoot(&player, &playerShot, true);
 			}
-			input = uart_rx_poll(UART0_BASE, false);
-			if(input == ' ') {
-				paused = true;
-				printPauseMsg = true;
-				input = NULL;
-				DisableInterrupts();
-			}
 		}
-		if(printPauseMsg) {
-			printPauseMsg = false;
-			put_string("\n\rPaused\n\r");
-		}
-		input = uart_rx_poll(UART0_BASE, false);
-		if(input == ' ') {
-			paused = false;
-			put_string("Resumed\n\r");
-			input = NULL;
-			EnableInterrupts();
-		}
+		
 	}
 	lp_io_clear_pin(BLUE_M);
 
