@@ -82,6 +82,7 @@ void serial_debug_tx(uint32_t uart_base, PC_Buffer *tx_buffer, int data)
 //****************************************************************************
 //  This function is called from MicroLIB's stdio library.  By implementing
 //  this function, MicroLIB's getchar(), scanf(), etc will now work.
+//  BLOCKING
 // ****************************************************************************/
 int fgetc(FILE* stream)
 {
@@ -100,7 +101,36 @@ int fgetc(FILE* stream)
    if (c == '\r')
       c = '\n';
 
-   fputc(c, stdout);
+	fputc(c, stdout);
+
+   return c;
+}
+
+//****************************************************************************
+//  This function is called from MicroLIB's stdio library.  By implementing
+//  this function, MicroLIB's getchar(), scanf(), etc will now work.
+//  NON-BLOCKING
+// ****************************************************************************/
+int fgetc_nb(FILE* stream)
+{
+   char c;
+
+   
+   if ( Rx_Interrupts_Enabled)
+   {
+    c = serial_debug_rx(SERIAL_DEBUG_RX_BUF_PTR, false);
+   }
+   else
+   {
+     c = uart_rx_poll(SERIAL_DEBUG_UART_BASE,false);
+   }
+
+   if (c == '\r')
+      c = '\n';
+
+	 
+	 if(c == ' ')
+		fputc(c, stdout);
 
    return c;
 }
@@ -112,6 +142,7 @@ int fgetc(FILE* stream)
 int fputc(int c, FILE* stream)
 {
 	FILE *file;
+	if(c != 0) {
    if ( Tx_Interrupts_Enabled)
    {
       serial_debug_tx(SERIAL_DEBUG_UART_BASE, SERIAL_DEBUG_TX_BUF_PTR, c);
@@ -132,6 +163,7 @@ int fputc(int c, FILE* stream)
          uart_tx_poll(SERIAL_DEBUG_UART_BASE, '\r');
       }
    }
+ }
 
    return c;
 }
